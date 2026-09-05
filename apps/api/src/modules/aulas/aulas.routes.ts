@@ -22,6 +22,18 @@ export const aulasRouter = Router();
 
 aulasRouter.use(autenticar);
 
+/* --------------------------------------------------------------------------
+ * Rotas literais primeiro: o Express casa na ordem de registro, e
+ * '/:id/frequencia' capturaria '/relatorios/frequencia' com id='relatorios'.
+ * ------------------------------------------------------------------------ */
+
+aulasRouter.get(
+  '/relatorios/frequencia',
+  somenteAdmin,
+  validar(relatorioFrequenciaSchema, 'query'),
+  rota(async (req, res) => res.json(await presenca.relatorioFrequencia(req.query as never))),
+);
+
 /* -------------------------------- Agenda ------------------------------- */
 
 aulasRouter.get(
@@ -138,11 +150,4 @@ aulasRouter.post(
       }),
     );
   }),
-);
-
-aulasRouter.get(
-  '/relatorios/frequencia',
-  somenteAdmin,
-  validar(relatorioFrequenciaSchema, 'query'),
-  rota(async (req, res) => res.json(await presenca.relatorioFrequencia(req.query as never))),
 );

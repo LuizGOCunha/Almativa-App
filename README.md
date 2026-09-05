@@ -199,8 +199,8 @@ histórico financeiro de 3 competências, 6 presets de cronômetro, 3 playlists 
 | `npm run db:migrate` | Aplica migrações do Prisma |
 | `npm run db:seed` | Popula o banco (idempotente) |
 | `npm run db:studio` | Abre o Prisma Studio |
-| `npm run test` | Testes da API + do front (31 no total) |
-| `npm run test:api` | Só a API — Vitest, 18 testes |
+| `npm run test` | Testes da API + do front (45 no total) |
+| `npm run test:api` | Só a API — Vitest, 32 testes |
 | `npm run test:web` | Só o front — Karma headless, 13 testes |
 
 ---
@@ -401,9 +401,10 @@ Levantadas por inspeção do código, não por suposição. Ordenadas por impact
 
 ### Bloqueadores para produção
 
-- [ ] **Cobertura de teste ainda rasa.** Existem 31 testes, todos sobre lógica
-      pura: `utils/datas` na API (18) e os pipes de formato no front (13) — o
-      suficiente para travar a convenção de fuso contra regressão. Falta o que
+- [ ] **Cobertura de teste ainda rasa.** Existem 45 testes, sobre lógica pura e
+      configuração: `utils/datas` (18), ordem de registro das rotas (14) e os
+      pipes de formato no front (13) — travando a convenção de fuso e o
+      sombreamento de rotas contra regressão. Falta o que
       depende de banco: lista de espera do check-in, geração de mensalidades,
       pagamento parcial, deduplicação de lembrete e os guards de autenticação.
       Não há teste de integração nem end-to-end.
