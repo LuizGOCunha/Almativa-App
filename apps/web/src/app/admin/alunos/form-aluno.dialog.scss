@@ -1,0 +1,49 @@
+mat-dialog-content {
+  min-width: min(640px, 84vw);
+}
+
+.form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+  padding-top: 6px;
+
+  @media (max-width: 599px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+h3 {
+  grid-column: 1 / -1;
+  margin: 12px 0 14px;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.col-2 {
+  grid-column: 1 / -1;
+}
+
+.acesso {
+  padding: 14px 16px;
+  margin-top: 4px;
+  border-radius: var(--alm-raio-sm);
+  background: var(--mat-sys-surface-container-low);
+  border: 1px solid var(--mat-sys-outline-variant);
+
+  p {
+    margin: 6px 0 0;
+    font-size: 0.8125rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}

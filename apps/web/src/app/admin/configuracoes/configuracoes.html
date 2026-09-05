@@ -1,0 +1,373 @@
+<header class="alm-titulo-pagina">
+  <div>
+    <h1>Configurações</h1>
+    <p>Modalidades, planos, grade de turmas e equipe.</p>
+  </div>
+</header>
+
+@if (carregando()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+<mat-tab-group animationDuration="180ms">
+  <!-- ----------------------------- Modalidades -------------------------- -->
+  <mat-tab label="Modalidades">
+    <div class="aba">
+      <form [formGroup]="formModalidade" class="alm-cartao painel" novalidate>
+        <h2>{{ editandoModalidade() ? 'Editar modalidade' : 'Nova modalidade' }}</h2>
+
+        <mat-form-field>
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" (blur)="sugerirSlug()" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Slug (URL)</mat-label>
+          <input matInput formControlName="slug" />
+          <mat-hint>letras minúsculas, números e hífen</mat-hint>
+        </mat-form-field>
+
+        <div class="linha">
+          <mat-form-field class="cor">
+            <mat-label>Cor</mat-label>
+            <input matInput type="color" formControlName="cor" />
+          </mat-form-field>
+          <mat-form-field class="cresce">
+            <mat-label>Ícone (Material Symbols)</mat-label>
+            <input matInput formControlName="icone" placeholder="self_improvement" />
+          </mat-form-field>
+        </div>
+
+        <mat-form-field>
+          <mat-label>Descrição</mat-label>
+          <textarea matInput formControlName="descricao" rows="3"></textarea>
+        </mat-form-field>
+
+        <mat-slide-toggle formControlName="ativo">Ativa</mat-slide-toggle>
+
+        <div class="painel__acoes">
+          @if (editandoModalidade()) {
+            <button matButton type="button" (click)="cancelarModalidade()">Cancelar</button>
+          }
+          <button matButton="filled" type="button" (click)="salvarModalidade()">
+            {{ editandoModalidade() ? 'Salvar' : 'Criar' }}
+          </button>
+        </div>
+      </form>
+
+      <section class="lista">
+        @for (m of modalidades(); track m.id) {
+          <article class="alm-cartao linha-item" [style.--cor]="m.cor" [class.inativo]="!m.ativo">
+            <span class="bolinha"></span>
+            <div class="linha-item__texto">
+              <strong>{{ m.nome }}</strong>
+              <small>{{ m.slug }}{{ m.descricao ? ' · ' + m.descricao : '' }}</small>
+            </div>
+            <button matIconButton (click)="editarModalidade(m)" aria-label="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button matIconButton (click)="removerModalidade(m)" aria-label="Excluir">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </article>
+        } @empty {
+          <app-estado-vazio icone="category" titulo="Nenhuma modalidade cadastrada." />
+        }
+      </section>
+    </div>
+  </mat-tab>
+
+  <!-- -------------------------------- Planos ---------------------------- -->
+  <mat-tab label="Planos">
+    <div class="aba">
+      <form [formGroup]="formPlano" class="alm-cartao painel" novalidate>
+        <h2>{{ editandoPlano() ? 'Editar plano' : 'Novo plano' }}</h2>
+
+        <mat-form-field>
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Modalidade</mat-label>
+          <mat-select formControlName="modalidadeId">
+            <mat-option value="">Todas (combo)</mat-option>
+            @for (m of modalidades(); track m.id) {
+              <mat-option [value]="m.id">{{ m.nome }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <div class="linha">
+          <mat-form-field class="cresce">
+            <mat-label>Valor</mat-label>
+            <input matInput formControlName="valor" inputmode="decimal" />
+            <span matTextPrefix>R$&nbsp;</span>
+          </mat-form-field>
+
+          <mat-form-field class="cresce">
+            <mat-label>Periodicidade</mat-label>
+            <mat-select formControlName="periodicidade">
+              <mat-option value="MENSAL">Mensal</mat-option>
+              <mat-option value="TRIMESTRAL">Trimestral</mat-option>
+              <mat-option value="SEMESTRAL">Semestral</mat-option>
+              <mat-option value="ANUAL">Anual</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="linha">
+          <mat-form-field class="cresce">
+            <mat-label>Aulas por semana</mat-label>
+            <input matInput type="number" formControlName="aulasPorSemana" min="1" max="14" />
+          </mat-form-field>
+
+          <mat-form-field class="cresce">
+            <mat-label>Vencimento padrão</mat-label>
+            <input matInput type="number" formControlName="diaVencimentoPadrao" min="1" max="28" />
+          </mat-form-field>
+        </div>
+
+        <mat-form-field>
+          <mat-label>Descrição</mat-label>
+          <textarea matInput formControlName="descricao" rows="2"></textarea>
+        </mat-form-field>
+
+        <mat-slide-toggle formControlName="ativo">Ativo</mat-slide-toggle>
+
+        <div class="painel__acoes">
+          @if (editandoPlano()) {
+            <button matButton type="button" (click)="cancelarPlano()">Cancelar</button>
+          }
+          <button matButton="filled" type="button" (click)="salvarPlano()">
+            {{ editandoPlano() ? 'Salvar' : 'Criar' }}
+          </button>
+        </div>
+      </form>
+
+      <section class="lista">
+        @for (p of planos(); track p.id) {
+          <article class="alm-cartao linha-item" [class.inativo]="!p.ativo">
+            <div class="linha-item__texto">
+              <strong>{{ p.nome }}</strong>
+              <small>
+                {{ p.modalidade?.nome ?? 'Todas as modalidades' }}
+                @if (p.aulasPorSemana) {
+                  · {{ p.aulasPorSemana }}x/semana
+                }
+                · vence dia {{ p.diaVencimentoPadrao }}
+              </small>
+            </div>
+            <span class="valor">{{ p.valorCentavos | moeda }}</span>
+            <button matIconButton (click)="editarPlano(p)" aria-label="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button matIconButton (click)="removerPlano(p)" aria-label="Desativar">
+              <mat-icon>block</mat-icon>
+            </button>
+          </article>
+        } @empty {
+          <app-estado-vazio icone="sell" titulo="Nenhum plano cadastrado." />
+        }
+      </section>
+    </div>
+  </mat-tab>
+
+  <!-- -------------------------------- Turmas ---------------------------- -->
+  <mat-tab label="Turmas">
+    <div class="aba">
+      <form [formGroup]="formTurma" class="alm-cartao painel" novalidate>
+        <h2>{{ editandoTurma() ? 'Editar turma' : 'Nova turma' }}</h2>
+
+        <mat-form-field>
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" placeholder="Pilates Manhã" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Modalidade</mat-label>
+          <mat-select formControlName="modalidadeId">
+            @for (m of modalidades(); track m.id) {
+              <mat-option [value]="m.id">{{ m.nome }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Instrutor</mat-label>
+          <mat-select formControlName="instrutorId">
+            <mat-option value="">A definir</mat-option>
+            @for (i of instrutores(); track i.id) {
+              <mat-option [value]="i.id">{{ i.nome }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Dia da semana</mat-label>
+          <mat-select formControlName="diaSemana">
+            @for (d of dias; track d.valor) {
+              <mat-option [value]="d.valor">{{ d.longo }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <div class="linha">
+          <mat-form-field class="cresce">
+            <mat-label>Início</mat-label>
+            <input matInput type="time" formControlName="horaInicio" />
+          </mat-form-field>
+          <mat-form-field class="cresce">
+            <mat-label>Término</mat-label>
+            <input matInput type="time" formControlName="horaFim" />
+          </mat-form-field>
+          <mat-form-field class="estreito">
+            <mat-label>Vagas</mat-label>
+            <input matInput type="number" formControlName="capacidade" min="1" />
+          </mat-form-field>
+        </div>
+
+        <div class="linha">
+          <mat-form-field class="cresce">
+            <mat-label>Sala</mat-label>
+            <input matInput formControlName="sala" />
+          </mat-form-field>
+          <mat-form-field class="cresce">
+            <mat-label>Nível</mat-label>
+            <input matInput formControlName="nivel" placeholder="Todos os níveis" />
+          </mat-form-field>
+        </div>
+
+        <mat-slide-toggle formControlName="ativo">Ativa</mat-slide-toggle>
+
+        <div class="painel__acoes">
+          @if (editandoTurma()) {
+            <button matButton type="button" (click)="cancelarTurma()">Cancelar</button>
+          }
+          <button matButton="filled" type="button" (click)="salvarTurma()">
+            {{ editandoTurma() ? 'Salvar' : 'Criar' }}
+          </button>
+        </div>
+      </form>
+
+      <section class="lista">
+        @for (grupo of turmasPorDia(); track grupo.valor) {
+          <h3 class="grupo-dia">{{ grupo.valor | diaSemana: 'longo' }}</h3>
+          @for (t of grupo.turmas; track t.id) {
+            <article
+              class="alm-cartao linha-item"
+              [style.--cor]="t.modalidade.cor"
+              [class.inativo]="!t.ativo"
+            >
+              <span class="bolinha"></span>
+              <span class="hora">{{ t.horaInicio }}–{{ t.horaFim }}</span>
+              <div class="linha-item__texto">
+                <strong>{{ t.nome }}</strong>
+                <small>
+                  {{ t.modalidade.nome }}
+                  @if (t.instrutor) {
+                    · {{ t.instrutor.nome }}
+                  }
+                  @if (t.sala) {
+                    · {{ t.sala }}
+                  }
+                  · {{ t.capacidade }} vagas
+                </small>
+              </div>
+              <button matIconButton (click)="editarTurma(t)" aria-label="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button matIconButton (click)="removerTurma(t)" aria-label="Desativar">
+                <mat-icon>block</mat-icon>
+              </button>
+            </article>
+          }
+        } @empty {
+          <app-estado-vazio icone="calendar_month" titulo="Nenhuma turma na grade." />
+        }
+      </section>
+    </div>
+  </mat-tab>
+
+  <!-- ----------------------------- Instrutores -------------------------- -->
+  <mat-tab label="Equipe">
+    <div class="aba">
+      <form [formGroup]="formInstrutor" class="alm-cartao painel" novalidate>
+        <h2>{{ editandoInstrutor() ? 'Editar instrutor' : 'Novo instrutor' }}</h2>
+
+        <mat-form-field>
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>E-mail</mat-label>
+          <input matInput type="email" formControlName="email" />
+        </mat-form-field>
+
+        <div class="linha">
+          <mat-form-field class="cresce">
+            <mat-label>Telefone</mat-label>
+            <input matInput formControlName="telefone" />
+          </mat-form-field>
+          <mat-form-field class="cresce">
+            <mat-label>Registro profissional</mat-label>
+            <input matInput formControlName="registroProfissional" placeholder="CREFITO 3/000000-F" />
+          </mat-form-field>
+        </div>
+
+        <mat-form-field>
+          <mat-label>Modalidades</mat-label>
+          <mat-select formControlName="modalidadeIds" multiple>
+            @for (m of modalidades(); track m.id) {
+              <mat-option [value]="m.id">{{ m.nome }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Bio</mat-label>
+          <textarea matInput formControlName="bio" rows="3"></textarea>
+          <mat-hint>Aparece no site público.</mat-hint>
+        </mat-form-field>
+
+        <mat-slide-toggle formControlName="ativo">Ativo</mat-slide-toggle>
+
+        <div class="painel__acoes">
+          @if (editandoInstrutor()) {
+            <button matButton type="button" (click)="cancelarInstrutor()">Cancelar</button>
+          }
+          <button matButton="filled" type="button" (click)="salvarInstrutor()">
+            {{ editandoInstrutor() ? 'Salvar' : 'Cadastrar' }}
+          </button>
+        </div>
+      </form>
+
+      <section class="lista">
+        @for (i of instrutores(); track i.id) {
+          <article class="alm-cartao linha-item" [class.inativo]="!i.ativo">
+            <div class="linha-item__texto">
+              <strong>{{ i.nome }}</strong>
+              <small>
+                @for (m of i.modalidades; track m.id) {
+                  <span class="tag" [style.--cor]="m.cor">{{ m.nome }}</span>
+                }
+                @if (i.registroProfissional) {
+                  {{ i.registroProfissional }}
+                }
+              </small>
+            </div>
+            <button matIconButton (click)="editarInstrutor(i)" aria-label="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button matIconButton (click)="removerInstrutor(i)" aria-label="Desativar">
+              <mat-icon>block</mat-icon>
+            </button>
+          </article>
+        } @empty {
+          <app-estado-vazio icone="groups" titulo="Nenhum instrutor cadastrado." />
+        }
+      </section>
+    </div>
+  </mat-tab>
+</mat-tab-group>

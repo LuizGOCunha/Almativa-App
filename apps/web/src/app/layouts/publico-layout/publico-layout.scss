@@ -1,0 +1,196 @@
+.casca {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+/* ------------------------------- Topo ---------------------------------- */
+.topo {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--alm-creme) 88%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid color-mix(in srgb, var(--alm-verde) 10%, transparent);
+
+  &__linha {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    height: 72px;
+  }
+
+  &__marca {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  &__nome {
+    font-family: Outfit, sans-serif;
+    font-weight: 700;
+    font-size: 1.125rem;
+    letter-spacing: 0.14em;
+    color: var(--alm-verde);
+  }
+
+  &__nav {
+    display: flex;
+    gap: 4px;
+    margin-inline-start: auto;
+
+    a {
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--mat-sys-on-surface-variant);
+      transition: background 0.18s ease, color 0.18s ease;
+
+      &:hover {
+        background: color-mix(in srgb, var(--alm-verde) 8%, transparent);
+        color: var(--alm-verde);
+      }
+
+      &.ativo {
+        color: var(--alm-verde);
+        background: color-mix(in srgb, var(--alm-verde) 12%, transparent);
+      }
+    }
+
+    @media (max-width: 899px) {
+      display: none;
+    }
+  }
+
+  &__acoes {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-inline-start: auto;
+
+    @media (min-width: 900px) {
+      margin-inline-start: 0;
+    }
+  }
+
+  &__menu-botao {
+    display: none;
+
+    @media (max-width: 899px) {
+      display: inline-flex;
+    }
+  }
+
+  &__entrar {
+    @media (max-width: 599px) {
+      display: none;
+    }
+  }
+}
+
+.menu-mobile {
+  display: grid;
+  border-top: 1px solid color-mix(in srgb, var(--alm-verde) 10%, transparent);
+  background: var(--mat-sys-surface);
+  padding: 8px 16px 16px;
+
+  a {
+    padding: 14px 8px;
+    font-weight: 500;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.conteudo {
+  flex: 1;
+}
+
+/* ------------------------------ Rodape --------------------------------- */
+.rodape {
+  margin-top: 96px;
+  background: var(--alm-verde-escuro);
+  color: color-mix(in srgb, white 82%, transparent);
+  padding-top: 56px;
+
+  h3 {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, white 55%, transparent);
+    margin-bottom: 14px;
+  }
+
+  a,
+  span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-block: 6px;
+    font-size: 0.9375rem;
+    transition: color 0.18s ease;
+
+    &:hover {
+      color: white;
+    }
+  }
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    opacity: 0.6;
+  }
+
+  &__grade {
+    display: grid;
+    gap: 40px;
+    grid-template-columns: 1.6fr 1fr 1.2fr;
+    padding-bottom: 48px;
+
+    @media (max-width: 899px) {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media (max-width: 599px) {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+
+  &__marca p {
+    margin: 16px 0 0;
+    max-width: 38ch;
+    line-height: 1.7;
+    font-size: 0.9375rem;
+  }
+
+  &__links {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  &__base {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-block: 20px;
+    border-top: 1px solid color-mix(in srgb, white 12%, transparent);
+    font-size: 0.8125rem;
+    color: color-mix(in srgb, white 50%, transparent);
+  }
+
+  &__tv {
+    font-size: 0.8125rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}

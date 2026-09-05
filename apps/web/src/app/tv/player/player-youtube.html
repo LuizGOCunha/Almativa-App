@@ -1,0 +1,74 @@
+<section class="player" [class.player--audio]="somenteAudio()">
+  <div class="player__palco" [class.oculto]="somenteAudio()">
+    <div #hospedeiro class="player__iframe"></div>
+
+    @if (somenteAudio()) {
+      <div class="player__capa" aria-hidden="true">
+        <mat-icon>graphic_eq</mat-icon>
+        <span>{{ tocando() ? 'tocando' : 'pausado' }}</span>
+      </div>
+    }
+  </div>
+
+  <div class="player__info">
+    <span class="player__nome">{{ playlist().nome }}</span>
+    <strong class="player__faixa">{{ itemAtual() ? itemAtual()!.titulo : 'Sem vídeos' }}</strong>
+    @if (erro()) {
+      <span class="player__erro">{{ erro() }}</span>
+    } @else {
+      <span class="player__contagem">
+        {{ indice() + 1 }} de {{ itens().length }}
+      </span>
+    }
+  </div>
+
+  <div class="player__controles">
+    <button matIconButton (click)="anterior()" aria-label="Faixa anterior">
+      <mat-icon>skip_previous</mat-icon>
+    </button>
+
+    <button
+      matFab
+      class="player__play"
+      (click)="alternar()"
+      [disabled]="!pronto()"
+      [attr.aria-label]="tocando() ? 'Pausar' : 'Tocar'"
+    >
+      <mat-icon>{{ tocando() ? 'pause' : 'play_arrow' }}</mat-icon>
+    </button>
+
+    <button matIconButton (click)="proximo()" aria-label="Próxima faixa">
+      <mat-icon>skip_next</mat-icon>
+    </button>
+
+    <button
+      matIconButton
+      (click)="alternarMudo()"
+      [attr.aria-label]="mudo() ? 'Reativar som' : 'Silenciar'"
+    >
+      <mat-icon>{{ mudo() ? 'volume_off' : 'volume_up' }}</mat-icon>
+    </button>
+
+    <mat-slider class="player__volume" min="0" max="100" step="5" discrete>
+      <input
+        matSliderThumb
+        [value]="volume()"
+        (valueChange)="aoMudarVolume($event)"
+        aria-label="Volume"
+      />
+    </mat-slider>
+  </div>
+
+  @if (itens().length > 1) {
+    <ul class="player__lista">
+      @for (item of itens(); track item.videoId; let i = $index) {
+        <li>
+          <button type="button" [class.ativa]="i === indice()" (click)="irPara(i)">
+            <mat-icon>{{ i === indice() && tocando() ? 'graphic_eq' : 'play_arrow' }}</mat-icon>
+            <span>{{ item.titulo }}</span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</section>

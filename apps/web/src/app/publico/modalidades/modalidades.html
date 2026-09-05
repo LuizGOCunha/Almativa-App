@@ -1,0 +1,105 @@
+<header class="capa">
+  <div class="alm-container">
+    <h1>Modalidades</h1>
+    <p>
+      Três frentes que se conversam. Você pode fazer só uma, ou combinar — o plano Almativa Total
+      libera todas.
+    </p>
+  </div>
+</header>
+
+<div class="alm-container">
+  @for (bloco of blocos(); track bloco.modalidade.id) {
+    <section class="bloco" [id]="bloco.modalidade.slug" [style.--cor]="bloco.modalidade.cor">
+      <div class="bloco__cabecalho">
+        <span class="bloco__icone">
+          <mat-icon>{{ bloco.modalidade.icone ?? 'fitness_center' }}</mat-icon>
+        </span>
+        <div>
+          <h2>{{ bloco.modalidade.nome }}</h2>
+          <p>{{ bloco.modalidade.descricao }}</p>
+        </div>
+      </div>
+
+      <div class="bloco__grade">
+        <!-- Horários -->
+        <div class="painel">
+          <h3><mat-icon>schedule</mat-icon> Horários</h3>
+          @if (bloco.horarios.length > 0) {
+            <ul class="horarios">
+              @for (h of bloco.horarios; track h.turmaId) {
+                <li>
+                  <span class="horarios__dia">{{ h.diaSemana | diaSemana }}</span>
+                  <span class="horarios__hora">{{ h.horaInicio }}–{{ h.horaFim }}</span>
+                  <span class="horarios__nome">
+                    {{ h.nome }}
+                    @if (h.nivel) {
+                      <small>· {{ h.nivel }}</small>
+                    }
+                  </span>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="painel__vazio">Horários em definição. Fale com a gente.</p>
+          }
+        </div>
+
+        <!-- Planos -->
+        <div class="painel">
+          <h3><mat-icon>sell</mat-icon> Planos</h3>
+          @if (bloco.planos.length > 0) {
+            <ul class="planos-lista">
+              @for (p of bloco.planos; track p.id) {
+                <li>
+                  <div>
+                    <strong>{{ p.nome }}</strong>
+                    @if (p.aulasPorSemana) {
+                      <small>{{ p.aulasPorSemana }}x por semana</small>
+                    }
+                  </div>
+                  <span class="planos-lista__valor">{{ p.valorCentavos | moeda }}</span>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="painel__vazio">Consulte valores com a recepção.</p>
+          }
+        </div>
+
+        <!-- Equipe -->
+        <div class="painel">
+          <h3><mat-icon>groups</mat-icon> Equipe</h3>
+          @if (bloco.equipe.length > 0) {
+            <ul class="equipe-lista">
+              @for (i of bloco.equipe; track i.id) {
+                <li>
+                  <strong>{{ i.nome }}</strong>
+                  @if (i.registroProfissional) {
+                    <small>{{ i.registroProfissional }}</small>
+                  }
+                  @if (i.bio) {
+                    <p>{{ i.bio }}</p>
+                  }
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="painel__vazio">Equipe em formação.</p>
+          }
+        </div>
+      </div>
+
+      <div class="bloco__acoes">
+        <a matButton="filled" routerLink="/contato">Agendar experimental de {{ bloco.modalidade.nome }}</a>
+        <a matButton="outlined" routerLink="/horarios">Ver grade completa</a>
+      </div>
+    </section>
+  } @empty {
+    <div class="alm-vazio">
+      <mat-icon>inbox</mat-icon>
+      <strong>Nenhuma modalidade cadastrada ainda.</strong>
+      <span>Assim que a equipe cadastrar, elas aparecem aqui.</span>
+    </div>
+  }
+</div>

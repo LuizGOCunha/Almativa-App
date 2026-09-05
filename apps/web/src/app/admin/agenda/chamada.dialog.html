@@ -1,0 +1,81 @@
+@if (aula(); as a) {
+  <h2 mat-dialog-title>
+    {{ a.turma.nome }}
+    <small>{{ a.inicioEm | date: "EEEE, dd/MM 'às' HH:mm" }}</small>
+  </h2>
+} @else {
+  <h2 mat-dialog-title>Chamada</h2>
+}
+
+@if (carregando()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+<mat-dialog-content>
+  @if (aula(); as a) {
+    <div class="resumo">
+      <span><strong>{{ a.checkins }}</strong> check-ins</span>
+      <span><strong>{{ presentes() }}</strong> presentes</span>
+      <span><strong>{{ a.capacidade }}</strong> vagas</span>
+      @if (semMarcar() > 0) {
+        <span class="pendente">{{ semMarcar() }} sem marcar</span>
+      }
+    </div>
+
+    <div class="atalhos">
+      <button matButton (click)="marcarTodos('PRESENTE')">
+        <mat-icon>done_all</mat-icon> Todos presentes
+      </button>
+      <button matButton (click)="marcarTodos('AUSENTE')">
+        <mat-icon>remove_done</mat-icon> Todos ausentes
+      </button>
+    </div>
+
+    @if (linhas().length === 0) {
+      <p class="vazio">
+        Ninguém fez check-in nesta aula. Os alunos podem reservar a vaga pelo app, ou você pode
+        registrar a presença direto pela tela da sala.
+      </p>
+    } @else {
+      <ul class="lista">
+        @for (linha of linhas(); track linha.alunoId) {
+          <li [class.espera]="linha.listaEspera">
+            <span class="avatar">{{ linha.alunoNome | iniciais }}</span>
+            <span class="nome">
+              {{ linha.alunoNome }}
+              @if (linha.listaEspera) {
+                <small matTooltip="Estava na lista de espera">lista de espera</small>
+              }
+            </span>
+
+            <mat-button-toggle-group
+              [value]="linha.status"
+              (change)="marcar(linha.alunoId, $event.value)"
+              hideSingleSelectionIndicator
+              aria-label="Presença"
+            >
+              <mat-button-toggle value="PRESENTE" matTooltip="Presente">
+                <mat-icon>check</mat-icon>
+              </mat-button-toggle>
+              <mat-button-toggle value="JUSTIFICADA" matTooltip="Falta justificada">
+                <mat-icon>event_busy</mat-icon>
+              </mat-button-toggle>
+              <mat-button-toggle value="AUSENTE" matTooltip="Faltou">
+                <mat-icon>close</mat-icon>
+              </mat-button-toggle>
+            </mat-button-toggle-group>
+          </li>
+        }
+      </ul>
+    }
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button matButton mat-dialog-close>Fechar</button>
+  <button matButton="outlined" (click)="salvar(false)" [disabled]="salvando()">Salvar parcial</button>
+  <button matButton="filled" (click)="salvar(true)" [disabled]="salvando()">
+    <mat-icon>task_alt</mat-icon>
+    Fechar chamada
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,220 @@
+<header class="alm-titulo-pagina">
+  <div>
+    <h1>Tela da sala</h1>
+    <p>Timers, playlists do YouTube e os aparelhos que rodam o painel na TV.</p>
+  </div>
+  <a matButton="outlined" routerLink="/tv" target="_blank">
+    <mat-icon>open_in_new</mat-icon> Abrir a tela da sala
+  </a>
+</header>
+
+@if (carregando()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+<mat-tab-group animationDuration="180ms">
+  <!-- ------------------------------- Timers ----------------------------- -->
+  <mat-tab label="Timers">
+    <div class="painel-aba">
+      <div class="barra">
+        <button matButton="filled" (click)="editarTimer()">
+          <mat-icon>add</mat-icon> Novo timer
+        </button>
+      </div>
+
+      @if (timers().length === 0) {
+        <app-estado-vazio
+          icone="timer"
+          titulo="Nenhum timer configurado"
+          descricao="Crie presets de round para o professor só apertar play na TV."
+        />
+      } @else {
+        <div class="cartoes">
+          @for (t of timers(); track t.id) {
+            <article class="alm-cartao cartao">
+              <header>
+                <div>
+                  <h3>{{ t.nome }}</h3>
+                  @if (t.modalidade) {
+                    <span class="etiqueta" [style.--cor]="t.modalidade.cor">
+                      {{ t.modalidade.nome }}
+                    </span>
+                  } @else {
+                    <span class="etiqueta">Todas as modalidades</span>
+                  }
+                </div>
+                <span class="duracao">{{ duracao(t.duracaoTotalSegundos) }}</span>
+              </header>
+
+              @if (t.descricao) {
+                <p class="descricao">{{ t.descricao }}</p>
+              }
+
+              <ul class="intervalos">
+                @for (i of t.intervalos; track $index) {
+                  <li [attr.data-tipo]="i.tipo">
+                    <span>{{ i.rotulo }}</span>
+                    <strong>{{ duracao(i.duracaoSegundos) }}</strong>
+                  </li>
+                }
+              </ul>
+
+              <footer>
+                <span class="rounds">{{ t.rounds }} round(s)</span>
+                <button matButton (click)="editarTimer(t)">Editar</button>
+                <button matIconButton (click)="removerTimer(t)" aria-label="Excluir timer">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </footer>
+            </article>
+          }
+        </div>
+      }
+    </div>
+  </mat-tab>
+
+  <!-- ------------------------------ Playlists --------------------------- -->
+  <mat-tab label="Playlists">
+    <div class="painel-aba duas-colunas">
+      <form [formGroup]="formPlaylist" class="alm-cartao formulario" novalidate>
+        <h2>Nova playlist</h2>
+
+        <mat-form-field>
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" placeholder="Jiu-Jitsu — Treino forte" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Modalidade</mat-label>
+          <mat-select formControlName="modalidadeId">
+            <mat-option value="">Todas as modalidades</mat-option>
+            @for (m of modalidades(); track m.id) {
+              <mat-option [value]="m.id">{{ m.nome }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Vídeos (um por linha)</mat-label>
+          <textarea
+            matInput
+            formControlName="videos"
+            rows="6"
+            placeholder="Aquecimento | https://youtu.be/xxxxxxxxxxx&#10;https://www.youtube.com/watch?v=yyyyyyyyyyy"
+          ></textarea>
+          <mat-hint>Aceita link completo, youtu.be ou só o id. Use "título | link" para nomear.</mat-hint>
+        </mat-form-field>
+
+        <div class="linha">
+          <mat-slide-toggle formControlName="somenteAudio">Somente áudio</mat-slide-toggle>
+          <mat-form-field class="estreito">
+            <mat-label>Volume</mat-label>
+            <input matInput type="number" formControlName="volumePadrao" min="0" max="100" />
+          </mat-form-field>
+        </div>
+
+        <button matButton="filled" type="button" (click)="criarPlaylist()">
+          <mat-icon>playlist_add</mat-icon> Criar playlist
+        </button>
+      </form>
+
+      <section class="lista">
+        @if (playlists().length === 0) {
+          <app-estado-vazio
+            icone="playlist_play"
+            titulo="Nenhuma playlist"
+            descricao="Monte a trilha das aulas colando os links do YouTube ao lado."
+          />
+        } @else {
+          @for (p of playlists(); track p.id) {
+            <article class="alm-cartao cartao">
+              <header>
+                <div>
+                  <h3>{{ p.nome }}</h3>
+                  <span class="etiqueta" [style.--cor]="p.modalidade?.cor ?? '#1E4D3B'">
+                    {{ p.modalidade?.nome ?? 'Todas as modalidades' }}
+                  </span>
+                </div>
+                <span class="duracao">{{ p.itens.length }} vídeo(s)</span>
+              </header>
+
+              <ul class="videos">
+                @for (i of p.itens; track i.videoId) {
+                  <li>
+                    <mat-icon>play_circle</mat-icon>
+                    <span>{{ i.titulo }}</span>
+                    <code>{{ i.videoId }}</code>
+                  </li>
+                }
+              </ul>
+
+              <footer>
+                <span class="rounds">
+                  {{ p.somenteAudio ? 'só áudio' : 'com vídeo' }} · volume {{ p.volumePadrao }}%
+                </span>
+                <button matIconButton (click)="removerPlaylist(p)" aria-label="Excluir playlist">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </footer>
+            </article>
+          }
+        }
+      </section>
+    </div>
+  </mat-tab>
+
+  <!-- ---------------------------- Dispositivos -------------------------- -->
+  <mat-tab label="Dispositivos">
+    <div class="painel-aba duas-colunas">
+      <form [formGroup]="formDispositivo" class="alm-cartao formulario" novalidate>
+        <h2>Parear uma TV</h2>
+        <p class="ajuda">
+          Cadastre o aparelho aqui, copie o token gerado e cole em
+          <strong>/tv/parear</strong> na TV. O token fica salvo no aparelho e não expira na sessão.
+        </p>
+
+        <mat-form-field>
+          <mat-label>Nome do aparelho</mat-label>
+          <input matInput formControlName="nome" placeholder="TV Tatame" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Sala (opcional)</mat-label>
+          <input matInput formControlName="sala" placeholder="Tatame" />
+        </mat-form-field>
+
+        <button matButton="filled" type="button" (click)="criarDispositivo()">
+          <mat-icon>cast</mat-icon> Gerar token
+        </button>
+      </form>
+
+      <section class="lista">
+        @if (dispositivos().length === 0) {
+          <app-estado-vazio icone="tv_off" titulo="Nenhum aparelho pareado" />
+        } @else {
+          @for (d of dispositivos(); track d.id) {
+            <article class="alm-cartao dispositivo" [class.inativo]="!d.ativo">
+              <mat-icon class="dispositivo__icone">{{ d.ativo ? 'tv' : 'tv_off' }}</mat-icon>
+              <div class="dispositivo__texto">
+                <strong>{{ d.nome }}</strong>
+                <small>
+                  {{ d.sala ?? 'sem sala' }} ·
+                  @if (d.ultimoAcessoEm) {
+                    último acesso {{ d.ultimoAcessoEm | date: 'dd/MM HH:mm' }}
+                  } @else {
+                    nunca conectou
+                  }
+                </small>
+              </div>
+              @if (d.ativo) {
+                <button matButton (click)="revogarDispositivo(d)">Revogar</button>
+              } @else {
+                <span class="alm-selo alm-selo--neutro">revogado</span>
+              }
+            </article>
+          }
+        }
+      </section>
+    </div>
+  </mat-tab>
+</mat-tab-group>

@@ -1,0 +1,192 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.cronometro {
+  --acento: var(--alm-teal);
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: clamp(20px, 2.5vw, 32px);
+  border-radius: 20px;
+  background: color-mix(in srgb, white 6%, transparent);
+  border: 1px solid color-mix(in srgb, white 12%, transparent);
+  color: white;
+  transition: border-color 0.3s ease;
+
+  /* A cor muda conforme o tipo do intervalo: dá para ler de longe. */
+  &[data-tipo='TRABALHO'] {
+    --acento: #7fd8a4;
+  }
+
+  &[data-tipo='DESCANSO'] {
+    --acento: #7fbebb;
+  }
+
+  &[data-tipo='PREPARO'] {
+    --acento: #c3d99b;
+  }
+
+  &[data-tipo='TRANSICAO'] {
+    --acento: #f0c48a;
+  }
+
+  &__topo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+
+    h2 {
+      font-size: 1.0625rem;
+      font-weight: 600;
+      color: color-mix(in srgb, white 92%, transparent);
+    }
+  }
+
+  &__round {
+    display: block;
+    margin-top: 3px;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, white 52%, transparent);
+  }
+
+  &__fim {
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--acento);
+    color: #0b1f16;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  &__rotulo {
+    margin: 0;
+    font-family: Outfit, sans-serif;
+    font-size: clamp(1.125rem, 0.9rem + 1vw, 1.75rem);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--acento);
+  }
+
+  &__mostrador {
+    margin: 0;
+    font-family: Outfit, sans-serif;
+    font-size: clamp(4rem, 2rem + 11vw, 11rem);
+    font-weight: 700;
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+    color: white;
+    transition: color 0.2s ease;
+
+    &.alerta {
+      color: #ffb4ab;
+      animation: pulsar 1s ease-in-out infinite;
+    }
+  }
+
+  &__trilho {
+    height: 8px;
+    border-radius: 999px;
+    background: color-mix(in srgb, white 12%, transparent);
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: var(--acento);
+      transition: width 0.12s linear;
+    }
+  }
+
+  &__proximo {
+    margin: 0;
+    font-size: 0.875rem;
+    color: color-mix(in srgb, white 60%, transparent);
+
+    small {
+      font-variant-numeric: tabular-nums;
+      opacity: 0.8;
+    }
+  }
+
+  &__controles {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 4px;
+
+    --mat-icon-button-icon-color: color-mix(in srgb, white 78%, transparent);
+    --mat-icon-button-disabled-icon-color: color-mix(in srgb, white 28%, transparent);
+  }
+
+  &__play {
+    --mat-fab-container-color: var(--acento);
+    --mat-fab-foreground-color: #0b1f16;
+  }
+
+  &__etapas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+  }
+
+  &__ponto {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: color-mix(in srgb, white 18%, transparent);
+    transition:
+      background 0.2s ease,
+      transform 0.2s ease;
+
+    &.feito {
+      background: color-mix(in srgb, white 45%, transparent);
+    }
+
+    &.atual {
+      background: var(--acento);
+      transform: scale(1.4);
+    }
+  }
+
+  /* ------------------------------ Compacto ------------------------------ */
+  &--compacto {
+    gap: 10px;
+    padding: 20px;
+
+    .cronometro__mostrador {
+      font-size: clamp(3rem, 2rem + 4vw, 5rem);
+    }
+
+    .cronometro__rotulo {
+      font-size: 1.0625rem;
+    }
+  }
+}
+
+@keyframes pulsar {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cronometro__mostrador.alerta {
+    animation: none;
+  }
+}

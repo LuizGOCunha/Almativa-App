@@ -1,0 +1,152 @@
+.resumo {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  margin-bottom: 16px;
+
+  article {
+    padding: 16px 20px;
+    border-radius: var(--alm-raio);
+    background: var(--mat-sys-surface);
+    border: 1px solid var(--mat-sys-outline-variant);
+
+    &.risco {
+      border-left: 4px solid var(--alm-alerta);
+    }
+  }
+
+  span {
+    display: block;
+    font-size: 0.6875rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  strong {
+    display: block;
+    margin-top: 5px;
+    font-family: Outfit, sans-serif;
+    font-size: 1.625rem;
+    font-weight: 700;
+    color: var(--alm-verde-escuro);
+    font-variant-numeric: tabular-nums;
+  }
+
+  small {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.6875rem;
+    color: var(--mat-sys-outline);
+  }
+}
+
+.filtros {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+
+  mat-form-field {
+    min-width: 150px;
+  }
+}
+
+.atalhos {
+  display: flex;
+  gap: 4px;
+}
+
+table {
+  width: 100%;
+}
+
+.celula-aluno {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-block: 6px;
+
+  strong {
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
+  &:hover strong {
+    color: var(--alm-verde);
+  }
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--alm-teal) 20%, transparent);
+  color: var(--alm-verde-escuro);
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.numerico {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+
+  small {
+    display: block;
+    margin-top: 1px;
+    font-weight: 400;
+    font-size: 0.6875rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.aproveitamento {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 150px;
+
+  &__trilho {
+    flex: 1;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--mat-sys-surface-container-high);
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+
+      &.bom {
+        background: var(--alm-sucesso);
+      }
+
+      &.medio {
+        background: var(--alm-alerta);
+      }
+
+      &.baixo {
+        background: var(--alm-erro);
+      }
+    }
+  }
+
+  &__valor {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    min-width: 38px;
+    text-align: end;
+  }
+}
+
+.ultima {
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
+}

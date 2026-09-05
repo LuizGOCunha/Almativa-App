@@ -1,0 +1,366 @@
+.cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+
+  &__texto {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  h1 {
+    font-size: clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem);
+    line-height: 1.2;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+
+    span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.8125rem;
+      color: var(--mat-sys-on-surface-variant);
+    }
+
+    mat-icon {
+      font-size: 15px;
+      width: 15px;
+      height: 15px;
+    }
+  }
+
+  &__acoes {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--alm-teal) 22%, transparent);
+  color: var(--alm-verde-escuro);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.resumo {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  margin-bottom: 8px;
+
+  &__item {
+    padding: 16px 18px;
+    border-radius: var(--alm-raio);
+    background: var(--mat-sys-surface);
+    border: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  &__rotulo {
+    display: block;
+    font-size: 0.6875rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  strong {
+    display: block;
+    margin-top: 6px;
+    font-family: Outfit, sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--alm-verde-escuro);
+    font-variant-numeric: tabular-nums;
+
+    &.alerta {
+      color: var(--alm-erro);
+    }
+  }
+
+  small {
+    display: block;
+    margin-top: 3px;
+    font-size: 0.75rem;
+    color: var(--mat-sys-outline);
+  }
+}
+
+.abas {
+  --mat-tab-header-divider-height: 1px;
+  margin-top: 8px;
+}
+
+.painel-aba {
+  padding-top: 20px;
+}
+
+/* --------------------------------- Ficha -------------------------------- */
+.ficha {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.bloco {
+  padding: 20px;
+
+  &--largo {
+    grid-column: 1 / -1;
+  }
+
+  h2 {
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+    margin-bottom: 14px;
+  }
+
+  dl {
+    margin: 0;
+    display: grid;
+    gap: 10px;
+
+    div {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 10px;
+      align-items: baseline;
+    }
+
+    dt {
+      font-size: 0.75rem;
+      color: var(--mat-sys-outline);
+    }
+
+    dd {
+      margin: 0;
+      font-size: 0.9375rem;
+      word-break: break-word;
+    }
+  }
+}
+
+.texto-longo {
+  h3 {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--alm-verde);
+    margin-bottom: 4px;
+
+    & + p {
+      margin-bottom: 16px;
+    }
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: var(--mat-sys-on-surface-variant);
+    white-space: pre-wrap;
+  }
+}
+
+/* ------------------------------ Matrículas ------------------------------ */
+.matriculas {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.matricula {
+  padding: 20px;
+
+  > header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-size: 1rem;
+    color: var(--alm-verde-escuro);
+  }
+
+  &__modalidade {
+    --cor: var(--alm-verde);
+    display: inline-block;
+    margin-top: 6px;
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--cor) 13%, transparent);
+    color: var(--cor);
+    font-size: 0.6875rem;
+    font-weight: 600;
+  }
+
+  dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+
+    dt {
+      font-size: 0.6875rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--mat-sys-outline);
+    }
+
+    dd {
+      margin: 3px 0 0;
+      font-size: 0.9375rem;
+      font-weight: 500;
+    }
+  }
+
+  &__obs {
+    margin: 14px 0 0;
+    padding: 10px 12px;
+    border-radius: var(--alm-raio-sm);
+    background: var(--mat-sys-surface-container-low);
+    font-size: 0.8125rem;
+    line-height: 1.55;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .destrutivo {
+    margin-top: 14px;
+    --mat-button-text-label-text-color: var(--alm-erro);
+  }
+}
+
+/* ------------------------------ Financeiro ------------------------------ */
+.sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+
+  &.atraso {
+    color: var(--alm-erro);
+  }
+}
+
+.numerico {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.coluna-acoes {
+  text-align: end;
+  white-space: nowrap;
+}
+
+.pago-em {
+  font-size: 0.75rem;
+  color: var(--alm-sucesso);
+}
+
+.historico {
+  margin-top: 16px;
+  padding: 20px;
+
+  h2 {
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+    margin-bottom: 16px;
+  }
+}
+
+.linha-tempo {
+  margin: 0;
+  padding: 0 0 0 6px;
+  list-style: none;
+  max-height: 340px;
+  overflow-y: auto;
+
+  li {
+    position: relative;
+    display: flex;
+    gap: 14px;
+    padding-bottom: 16px;
+    padding-left: 18px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 14px;
+      bottom: 0;
+      width: 1px;
+      background: var(--mat-sys-outline-variant);
+    }
+
+    &:last-child {
+      padding-bottom: 0;
+
+      &::before {
+        display: none;
+      }
+    }
+  }
+
+  &__ponto {
+    position: absolute;
+    left: 0;
+    top: 5px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--alm-teal);
+
+    &[data-tipo='PAGAMENTO_REGISTRADO'] {
+      background: var(--alm-sucesso);
+    }
+
+    &[data-tipo='MENSALIDADE_VENCIDA'],
+    &[data-tipo='PAGAMENTO_ESTORNADO'] {
+      background: var(--alm-erro);
+    }
+
+    &[data-tipo='LEMBRETE_ENVIADO'] {
+      background: var(--alm-alerta);
+    }
+  }
+
+  strong {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+
+  &__detalhe {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  small {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.75rem;
+    color: var(--mat-sys-outline);
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "almativa",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plataforma de gestao da Almativa - Pilates, Jiu-Jitsu e Fisioterapia",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "concurrently -n api,web -c green,cyan \"npm run dev -w @almativa/api\" \"npm run start -w @almativa/web\"",
+    "dev:api": "npm run dev -w @almativa/api",
+    "dev:web": "npm run start -w @almativa/web",
+    "build": "npm run build -w @almativa/shared && npm run build -w @almativa/api && npm run build -w @almativa/web",
+    "build:shared": "npm run build -w @almativa/shared",
+    "test": "npm run test -w @almativa/api && npm run test:web",
+    "infra:up": "docker compose -f infra/docker-compose.yml up -d",
+    "infra:down": "docker compose -f infra/docker-compose.yml down",
+    "infra:reset": "docker compose -f infra/docker-compose.yml down -v && docker compose -f infra/docker-compose.yml up -d",
+    "db:migrate": "npm run db:migrate -w @almativa/api",
+    "db:seed": "npm run db:seed -w @almativa/api",
+    "db:studio": "npm run db:studio -w @almativa/api",
+    "setup": "npm install && npm run infra:up && npm run build:shared && npm run db:migrate && npm run db:seed",
+    "test:api": "npm run test -w @almativa/api",
+    "test:web": "npm run test -w @almativa/web -- --watch=false --browsers=ChromeHeadless"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}

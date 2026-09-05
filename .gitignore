@@ -1,0 +1,19 @@
+node_modules/
+dist/
+.angular/
+coverage/
+*.log
+npm-debug.log*
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+# Client do Prisma 7: gerado dentro do src, refeito no postinstall.
+apps/api/src/generated/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.playwright-mcp/
+*.png
+!apps/web/public/*

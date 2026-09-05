@@ -1,0 +1,133 @@
+<header class="alm-titulo-pagina">
+  <div>
+    <h1>Frequência</h1>
+    <p>
+      {{ de() | date: 'dd/MM/yyyy' }} a {{ ate() | date: 'dd/MM/yyyy' }} ·
+      {{ resumo().alunos }} aluno(s) com registro
+    </p>
+  </div>
+  <button matButton="outlined" (click)="exportarCsv()" [disabled]="linhas().length === 0">
+    <mat-icon>download</mat-icon> Exportar CSV
+  </button>
+</header>
+
+<section class="resumo">
+  <article><span>Presenças</span><strong>{{ resumo().presencas }}</strong></article>
+  <article><span>Aproveitamento médio</span><strong>{{ resumo().aproveitamento }}%</strong></article>
+  <article class="risco">
+    <span>Alunos em risco</span>
+    <strong>{{ resumo().emRisco }}</strong>
+    <small>abaixo de 50% em 3+ aulas</small>
+  </article>
+</section>
+
+<section class="filtros alm-cartao">
+  <div class="atalhos">
+    <button matButton (click)="periodoRapido(7)">7 dias</button>
+    <button matButton (click)="periodoRapido(30)">30 dias</button>
+    <button matButton (click)="periodoRapido(90)">90 dias</button>
+  </div>
+
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>De</mat-label>
+    <input matInput [matDatepicker]="dpDe" [value]="de()" (dateChange)="de.set($event.value); carregar()" />
+    <mat-datepicker-toggle matIconSuffix [for]="dpDe" />
+    <mat-datepicker #dpDe />
+  </mat-form-field>
+
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Até</mat-label>
+    <input matInput [matDatepicker]="dpAte" [value]="ate()" (dateChange)="ate.set($event.value); carregar()" />
+    <mat-datepicker-toggle matIconSuffix [for]="dpAte" />
+    <mat-datepicker #dpAte />
+  </mat-form-field>
+
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Modalidade</mat-label>
+    <mat-select [value]="modalidadeSlug()" (valueChange)="modalidadeSlug.set($event); carregar()">
+      <mat-option value="">Todas</mat-option>
+      @for (m of modalidades(); track m.id) {
+        <mat-option [value]="m.slug">{{ m.nome }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Ordenar por</mat-label>
+    <mat-select [value]="ordenacao()" (valueChange)="ordenacao.set($event)">
+      <mat-option value="presencas">Mais presenças</mat-option>
+      <mat-option value="aproveitamento">Melhor aproveitamento</mat-option>
+      <mat-option value="sumidos">Quem está sumindo</mat-option>
+    </mat-select>
+  </mat-form-field>
+</section>
+
+@if (carregando()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+<section class="alm-cartao">
+  @if (linhas().length === 0 && !carregando()) {
+    <app-estado-vazio
+      icone="fact_check"
+      titulo="Nenhum registro no período"
+      descricao="As presenças aparecem depois que o professor fecha a chamada das aulas."
+    />
+  } @else {
+    <div class="alm-rolagem-x">
+      <table mat-table [dataSource]="listaOrdenada()" class="alm-tabela">
+        <ng-container matColumnDef="aluno">
+          <th mat-header-cell *matHeaderCellDef>Aluno</th>
+          <td mat-cell *matCellDef="let l">
+            <a [routerLink]="['/admin/alunos', l.alunoId]" class="celula-aluno">
+              <span class="avatar">{{ l.alunoNome | iniciais }}</span>
+              <strong>{{ l.alunoNome }}</strong>
+            </a>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="presencas">
+          <th mat-header-cell *matHeaderCellDef>Presenças</th>
+          <td mat-cell *matCellDef="let l" class="numerico">
+            {{ l.presencas }}<small>de {{ l.totalAulas }}</small>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="faltas">
+          <th mat-header-cell *matHeaderCellDef>Faltas</th>
+          <td mat-cell *matCellDef="let l" class="numerico">
+            {{ l.ausencias }}
+            @if (l.justificadas > 0) {
+              <small>{{ l.justificadas }} justificada(s)</small>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="aproveitamento">
+          <th mat-header-cell *matHeaderCellDef>Aproveitamento</th>
+          <td mat-cell *matCellDef="let l">
+            <div class="aproveitamento">
+              <div class="aproveitamento__trilho">
+                <span
+                  [style.width.%]="l.aproveitamento"
+                  [class]="classeAproveitamento(l.aproveitamento)"
+                ></span>
+              </div>
+              <span class="aproveitamento__valor">{{ l.aproveitamento }}%</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="ultima">
+          <th mat-header-cell *matHeaderCellDef>Última aula</th>
+          <td mat-cell *matCellDef="let l">
+            <span class="ultima">{{ l.ultimaAula | quando }}</span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+        <tr mat-row *matRowDef="let linha; columns: colunas"></tr>
+      </table>
+    </div>
+  }
+</section>

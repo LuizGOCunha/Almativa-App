@@ -1,0 +1,104 @@
+.tela {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  padding: 24px;
+  background:
+    radial-gradient(ellipse at 20% 15%, color-mix(in srgb, var(--alm-teal) 30%, transparent), transparent 55%),
+    var(--alm-verde-escuro);
+}
+
+.cartao {
+  width: 100%;
+  max-width: 480px;
+  padding: clamp(28px, 5vw, 44px);
+  border-radius: 20px;
+  background: color-mix(in srgb, white 7%, transparent);
+  border: 1px solid color-mix(in srgb, white 14%, transparent);
+  backdrop-filter: blur(16px);
+  color: white;
+  text-align: center;
+}
+
+h1 {
+  margin-top: 20px;
+  font-size: 1.625rem;
+  letter-spacing: -0.02em;
+}
+
+.subtitulo {
+  margin: 12px 0 28px;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: color-mix(in srgb, white 72%, transparent);
+
+  strong {
+    color: white;
+    font-weight: 600;
+  }
+}
+
+form {
+  display: grid;
+  gap: 8px;
+  text-align: start;
+}
+
+mat-form-field {
+  width: 100%;
+
+  // Campo claro sobre o fundo escuro da tela.
+  --mat-form-field-container-text-color: white;
+  --mat-form-field-label-text-color: color-mix(in srgb, white 70%, transparent);
+  --mdc-outlined-text-field-outline-color: color-mix(in srgb, white 30%, transparent);
+  --mdc-outlined-text-field-hover-outline-color: color-mix(in srgb, white 55%, transparent);
+  --mdc-outlined-text-field-focus-outline-color: white;
+  --mdc-outlined-text-field-focus-label-text-color: white;
+  --mdc-outlined-text-field-input-text-color: white;
+  --mdc-outlined-text-field-caret-color: white;
+  --mat-form-field-trailing-icon-color: color-mix(in srgb, white 60%, transparent);
+}
+
+button[type='submit'] {
+  --mat-button-filled-container-color: white;
+  --mat-button-filled-label-text-color: var(--alm-verde-escuro);
+  --mat-button-filled-container-height: 48px;
+}
+
+.erro {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--alm-raio-sm);
+  background: color-mix(in srgb, #ffb4ab 22%, transparent);
+  color: #ffdad6;
+  font-size: 0.875rem;
+  line-height: 1.5;
+
+  mat-icon {
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+    flex-shrink: 0;
+  }
+}
+
+.voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 28px;
+  font-size: 0.875rem;
+  color: color-mix(in srgb, white 70%, transparent);
+
+  &:hover {
+    color: white;
+  }
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}

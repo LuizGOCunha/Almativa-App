@@ -1,0 +1,255 @@
+.painel-aba {
+  padding-top: 20px;
+}
+
+.barra {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.duas-colunas {
+  display: grid;
+  grid-template-columns: minmax(300px, 380px) 1fr;
+  gap: 20px;
+  align-items: start;
+
+  @media (max-width: 1023px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.formulario {
+  display: grid;
+  gap: 4px;
+  padding: 22px;
+
+  h2 {
+    font-size: 1rem;
+    color: var(--alm-verde-escuro);
+    margin-bottom: 12px;
+  }
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  button[matButton] {
+    justify-self: start;
+    margin-top: 8px;
+  }
+
+  .linha {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 6px 0;
+  }
+
+  .estreito {
+    width: 110px;
+    flex-shrink: 0;
+  }
+}
+
+.ajuda {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: var(--alm-raio-sm);
+  background: var(--mat-sys-surface-container-low);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--mat-sys-on-surface-variant);
+
+  strong {
+    color: var(--alm-verde);
+    font-family: ui-monospace, Consolas, monospace;
+  }
+}
+
+.cartoes {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.lista {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+
+.cartao {
+  padding: 20px;
+
+  > header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    h3 {
+      font-size: 1rem;
+      color: var(--alm-verde-escuro);
+    }
+  }
+
+  > footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+  }
+}
+
+.etiqueta {
+  --cor: var(--alm-verde);
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--cor) 13%, transparent);
+  color: var(--cor);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.duracao {
+  font-family: Outfit, sans-serif;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--alm-verde);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.descricao {
+  margin: 0 0 12px;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.rounds {
+  flex: 1;
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+/* -------------------------- Lista de intervalos ------------------------- */
+.intervalos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 5px;
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 7px 11px;
+    border-radius: 8px;
+    background: var(--mat-sys-surface-container-low);
+    border-left: 3px solid var(--mat-sys-outline-variant);
+    font-size: 0.8125rem;
+
+    &[data-tipo='TRABALHO'] {
+      border-left-color: var(--alm-verde);
+    }
+
+    &[data-tipo='DESCANSO'] {
+      border-left-color: var(--alm-teal);
+    }
+
+    &[data-tipo='PREPARO'] {
+      border-left-color: var(--alm-salvia);
+    }
+
+    &[data-tipo='TRANSICAO'] {
+      border-left-color: var(--alm-alerta);
+    }
+
+    strong {
+      font-variant-numeric: tabular-nums;
+    }
+  }
+}
+
+/* ---------------------------- Lista de vídeos --------------------------- */
+.videos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8125rem;
+
+    mat-icon {
+      font-size: 17px;
+      width: 17px;
+      height: 17px;
+      color: var(--alm-teal);
+      flex-shrink: 0;
+    }
+
+    span {
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    code {
+      font-size: 0.6875rem;
+      color: var(--mat-sys-outline);
+      font-family: ui-monospace, Consolas, monospace;
+    }
+  }
+}
+
+/* ------------------------------ Dispositivos ---------------------------- */
+.dispositivo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+
+  &.inativo {
+    opacity: 0.6;
+  }
+
+  &__icone {
+    color: var(--alm-teal);
+    flex-shrink: 0;
+  }
+
+  &__texto {
+    flex: 1;
+    min-width: 0;
+
+    strong {
+      display: block;
+      font-size: 0.9375rem;
+      font-weight: 600;
+    }
+
+    small {
+      display: block;
+      margin-top: 2px;
+      font-size: 0.75rem;
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+}

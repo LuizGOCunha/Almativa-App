@@ -1,0 +1,245 @@
+:host {
+  display: block;
+}
+
+.casca {
+  --barra-largura: 252px;
+
+  display: grid;
+  grid-template-columns: var(--barra-largura) 1fr;
+  min-height: 100dvh;
+  background: var(--alm-creme);
+}
+
+/* ------------------------------ Barra lateral --------------------------- */
+.barra {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  padding: 20px 14px;
+  background: var(--alm-verde-escuro);
+  color: color-mix(in srgb, white 78%, transparent);
+
+  &__marca {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 4px 10px 22px;
+
+    strong {
+      display: block;
+      font-family: Outfit, sans-serif;
+      font-size: 0.9375rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: white;
+    }
+
+    small {
+      display: block;
+      margin-top: 2px;
+      font-size: 0.6875rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, white 48%, transparent);
+    }
+  }
+
+  &__nav {
+    display: grid;
+    gap: 2px;
+    align-content: start;
+    overflow-y: auto;
+    flex: 1;
+
+    a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      transition:
+        background 0.16s ease,
+        color 0.16s ease;
+
+      mat-icon {
+        font-size: 21px;
+        width: 21px;
+        height: 21px;
+        flex-shrink: 0;
+      }
+
+      > span:first-of-type {
+        flex: 1;
+      }
+
+      &:hover {
+        background: color-mix(in srgb, white 8%, transparent);
+        color: white;
+      }
+
+      &.ativo {
+        background: color-mix(in srgb, var(--alm-teal) 34%, transparent);
+        color: white;
+      }
+    }
+  }
+
+  &__contador {
+    min-width: 20px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: var(--alm-teal);
+    color: var(--alm-verde-escuro);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  &__rodape {
+    padding-top: 14px;
+    margin-top: 10px;
+    border-top: 1px solid color-mix(in srgb, white 12%, transparent);
+  }
+
+  &__site {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    color: color-mix(in srgb, white 62%, transparent);
+
+    mat-icon {
+      font-size: 19px;
+      width: 19px;
+      height: 19px;
+    }
+
+    &:hover {
+      background: color-mix(in srgb, white 8%, transparent);
+      color: white;
+    }
+  }
+}
+
+.cortina {
+  display: none;
+}
+
+/* --------------------------------- Área --------------------------------- */
+.area {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.topo {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 62px;
+  padding-inline: 12px 20px;
+  background: color-mix(in srgb, var(--alm-creme) 90%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  &__gaveta {
+    display: none;
+  }
+
+  &__espaco {
+    flex: 1;
+  }
+
+  &__perfil {
+    --mat-button-text-label-text-color: var(--mat-sys-on-surface);
+  }
+
+  &__nome {
+    @media (max-width: 599px) {
+      display: none;
+    }
+  }
+}
+
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-inline-end: 8px;
+  border-radius: 50%;
+  background: var(--alm-verde);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.menu-cabecalho {
+  padding: 12px 16px 10px;
+
+  strong {
+    display: block;
+    font-size: 0.875rem;
+  }
+
+  small {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.75rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.conteudo {
+  flex: 1;
+  padding: clamp(20px, 3vw, 32px);
+  min-width: 0;
+}
+
+/* ------------------------------- Responsivo ----------------------------- */
+@media (max-width: 1023px) {
+  .casca {
+    grid-template-columns: 1fr;
+  }
+
+  .barra {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 40;
+    width: var(--barra-largura);
+    transform: translateX(-100%);
+    transition: transform 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 40px rgb(0 0 0 / 25%);
+  }
+
+  .casca--gaveta-aberta .barra {
+    transform: translateX(0);
+  }
+
+  .casca--gaveta-aberta .cortina {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    border: 0;
+    padding: 0;
+    background: rgb(19 50 38 / 45%);
+    cursor: pointer;
+  }
+
+  .topo__gaveta {
+    display: inline-flex;
+  }
+}

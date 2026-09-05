@@ -1,0 +1,108 @@
+<header class="alm-titulo-pagina">
+  <div>
+    <h1>Agenda e check-in</h1>
+    <p>
+      Garanta sua vaga antes da aula — as turmas têm limite de pessoas.
+      @if (minhasVagas() > 0) {
+        Você tem <strong>{{ minhasVagas() }}</strong> vaga(s) reservada(s) nesta semana.
+      }
+    </p>
+  </div>
+</header>
+
+<section class="navegacao alm-cartao">
+  <button matIconButton (click)="navegar(-1)" aria-label="Semana anterior">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+  <span class="navegacao__periodo">
+    {{ inicioSemana() | date: 'dd/MM' }} – {{ fimSemana() | date: 'dd/MM' }}
+  </span>
+  <button matIconButton (click)="navegar(1)" aria-label="Próxima semana">
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+  <button matButton (click)="irParaHoje()">Esta semana</button>
+</section>
+
+@if (carregando()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+@if (dias().length === 0 && !carregando()) {
+  <app-estado-vazio
+    icone="event_busy"
+    titulo="Nenhuma aula nesta semana"
+    descricao="Confira outra semana ou fale com a recepção."
+  />
+} @else {
+  @for (dia of dias(); track dia.iso) {
+    <section class="dia">
+      <h2 [class.hoje]="dia.ehHoje">
+        {{ dia.rotulo }}
+        @if (dia.ehHoje) {
+          <span>hoje</span>
+        }
+      </h2>
+
+      <div class="aulas">
+        @for (aula of dia.aulas; track aula.id) {
+          <article
+            class="aula alm-cartao"
+            [style.--cor]="aula.turma.modalidade.cor"
+            [class.aula--minha]="aula.meuCheckin?.status === 'CONFIRMADO'"
+            [class.aula--cancelada]="aula.status === 'CANCELADA'"
+          >
+            <div class="aula__hora">
+              <strong>{{ aula.inicioEm | date: 'HH:mm' }}</strong>
+              <span>{{ aula.fimEm | date: 'HH:mm' }}</span>
+            </div>
+
+            <div class="aula__info">
+              <h3>{{ aula.turma.nome }}</h3>
+              <span class="aula__modalidade">{{ aula.turma.modalidade.nome }}</span>
+              <p class="aula__detalhes">
+                @if (aula.instrutor) {
+                  <span><mat-icon>person</mat-icon> {{ aula.instrutor.nome }}</span>
+                }
+                @if (aula.turma.sala) {
+                  <span><mat-icon>room</mat-icon> {{ aula.turma.sala }}</span>
+                }
+              </p>
+              <p
+                class="aula__vaga"
+                [class.confirmada]="aula.meuCheckin?.status === 'CONFIRMADO'"
+                [class.espera]="aula.meuCheckin?.status === 'LISTA_ESPERA'"
+              >
+                {{ rotuloVaga(aula) }}
+              </p>
+            </div>
+
+            <div class="aula__acao">
+              @if (aula.status === 'CANCELADA') {
+                <span class="alm-selo alm-selo--erro">cancelada</span>
+              } @else if (aula.meuCheckin) {
+                <button
+                  matButton="outlined"
+                  (click)="cancelarCheckin(aula)"
+                  [disabled]="processandoAulaId() === aula.id"
+                >
+                  Cancelar
+                </button>
+              } @else if (podeEntrar(aula)) {
+                <button
+                  matButton="filled"
+                  (click)="fazerCheckin(aula)"
+                  [disabled]="processandoAulaId() === aula.id"
+                >
+                  <mat-icon>how_to_reg</mat-icon>
+                  {{ aula.vagasDisponiveis === 0 ? 'Entrar na fila' : 'Garantir vaga' }}
+                </button>
+              } @else {
+                <span class="alm-selo alm-selo--neutro">encerrado</span>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+  }
+}

@@ -1,0 +1,289 @@
+@if (carregando() && !aluno()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+@if (aluno(); as a) {
+  <header class="cabecalho">
+    <a matIconButton routerLink="/admin/alunos" aria-label="Voltar para a lista">
+      <mat-icon>arrow_back</mat-icon>
+    </a>
+
+    <span class="avatar">{{ a.nome | iniciais }}</span>
+
+    <div class="cabecalho__texto">
+      <h1>{{ a.nome }}</h1>
+      <div class="cabecalho__meta">
+        <app-selo [rotulo]="rotulosAluno[a.status]" [comIcone]="false" />
+        <span>Aluno desde {{ a.dataMatricula | date: "MMMM 'de' y" }}</span>
+        @if (a.telefone) {
+          <span><mat-icon>call</mat-icon> {{ a.telefone | telefone }}</span>
+        }
+        @if (a.email) {
+          <span><mat-icon>mail</mat-icon> {{ a.email }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="cabecalho__acoes">
+      <button matButton="outlined" (click)="editar()">
+        <mat-icon>edit</mat-icon> Editar
+      </button>
+      <button matButton="filled" (click)="novaMatricula()">
+        <mat-icon>add</mat-icon> Nova matrícula
+      </button>
+    </div>
+  </header>
+
+  <section class="resumo">
+    <div class="resumo__item">
+      <span class="resumo__rotulo">Em aberto</span>
+      <strong [class.alerta]="totalEmAberto() > 0">{{ totalEmAberto() | moeda }}</strong>
+      <small>{{ emAberto().length }} mensalidade(s)</small>
+    </div>
+    <div class="resumo__item">
+      <span class="resumo__rotulo">Matrículas ativas</span>
+      <strong>{{ matriculasAtivas().length }}</strong>
+      <small>{{ a.matriculas.length }} no histórico</small>
+    </div>
+    <div class="resumo__item">
+      <span class="resumo__rotulo">Aproveitamento</span>
+      <strong>{{ resumoFrequencia().aproveitamento }}%</strong>
+      <small>{{ resumoFrequencia().presencas }} de {{ resumoFrequencia().total }} aulas</small>
+    </div>
+  </section>
+
+  <mat-tab-group class="abas" animationDuration="180ms">
+    <!-- ------------------------------ Ficha ------------------------------ -->
+    <mat-tab label="Ficha">
+      <div class="painel-aba">
+        <div class="ficha">
+          <section class="alm-cartao bloco">
+            <h2>Dados pessoais</h2>
+            <dl>
+              <div><dt>CPF</dt><dd>{{ a.cpf ?? '—' }}</dd></div>
+              <div>
+                <dt>Nascimento</dt>
+                <dd>{{ a.dataNascimento ? (a.dataNascimento | date: 'dd/MM/yyyy') : '—' }}</dd>
+              </div>
+              <div><dt>E-mail</dt><dd>{{ a.email ?? '—' }}</dd></div>
+              <div><dt>Telefone</dt><dd>{{ a.telefone | telefone }}</dd></div>
+            </dl>
+          </section>
+
+          <section class="alm-cartao bloco">
+            <h2>Endereço</h2>
+            <dl>
+              <div>
+                <dt>Logradouro</dt>
+                <dd>{{ a.logradouro ?? '—' }}{{ a.numero ? ', ' + a.numero : '' }}</dd>
+              </div>
+              <div><dt>Bairro</dt><dd>{{ a.bairro ?? '—' }}</dd></div>
+              <div>
+                <dt>Cidade</dt>
+                <dd>{{ a.cidade ?? '—' }}{{ a.uf ? '/' + a.uf : '' }}</dd>
+              </div>
+              <div><dt>CEP</dt><dd>{{ a.cep ?? '—' }}</dd></div>
+            </dl>
+          </section>
+
+          <section class="alm-cartao bloco">
+            <h2>Emergência</h2>
+            <dl>
+              <div><dt>Contato</dt><dd>{{ a.contatoEmergenciaNome ?? '—' }}</dd></div>
+              <div><dt>Telefone</dt><dd>{{ a.contatoEmergenciaTelefone | telefone }}</dd></div>
+            </dl>
+          </section>
+
+          <section class="alm-cartao bloco bloco--largo">
+            <h2>Saúde e objetivos</h2>
+            <div class="texto-longo">
+              <h3>Observações médicas</h3>
+              <p>{{ a.observacoesMedicas || 'Nenhuma observação registrada.' }}</p>
+              <h3>Objetivos</h3>
+              <p>{{ a.objetivos || 'Nenhum objetivo registrado.' }}</p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- --------------------------- Matrículas ---------------------------- -->
+    <mat-tab label="Matrículas">
+      <div class="painel-aba">
+        @if (a.matriculas.length === 0) {
+          <app-estado-vazio
+            icone="assignment"
+            titulo="Nenhuma matrícula"
+            descricao="Vincule o aluno a um plano para gerar as mensalidades."
+          >
+            <button matButton="filled" (click)="novaMatricula()">Criar matrícula</button>
+          </app-estado-vazio>
+        } @else {
+          <div class="matriculas">
+            @for (m of a.matriculas; track m.id) {
+              <article class="alm-cartao matricula">
+                <header>
+                  <div>
+                    <h2>{{ m.plano.nome }}</h2>
+                    @if (m.plano.modalidade) {
+                      <span class="matricula__modalidade" [style.--cor]="m.plano.modalidade.cor">
+                        {{ m.plano.modalidade.nome }}
+                      </span>
+                    }
+                  </div>
+                  <app-selo [rotulo]="rotulosMatricula[m.status]" [comIcone]="false" />
+                </header>
+
+                <dl>
+                  <div><dt>Valor</dt><dd>{{ m.plano.valorCentavos | moeda }}</dd></div>
+                  <div><dt>Início</dt><dd>{{ m.dataInicio | date: 'dd/MM/yyyy' }}</dd></div>
+                  <div><dt>Vencimento</dt><dd>dia {{ m.diaVencimento }}</dd></div>
+                  @if (m.plano.aulasPorSemana) {
+                    <div><dt>Frequência</dt><dd>{{ m.plano.aulasPorSemana }}x/semana</dd></div>
+                  }
+                </dl>
+
+                @if (m.observacao) {
+                  <p class="matricula__obs">{{ m.observacao }}</p>
+                }
+
+                @if (m.status === 'ATIVA') {
+                  <button matButton (click)="cancelarMatricula(m.id, m.plano.nome)" class="destrutivo">
+                    <mat-icon>cancel</mat-icon> Cancelar matrícula
+                  </button>
+                }
+              </article>
+            }
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- ---------------------------- Financeiro --------------------------- -->
+    <mat-tab label="Financeiro">
+      <div class="painel-aba">
+        @if (mensalidades().length === 0) {
+          <app-estado-vazio
+            icone="receipt_long"
+            titulo="Sem mensalidades"
+            descricao="As cobranças aparecem aqui assim que houver uma matrícula ativa."
+          />
+        } @else {
+          <div class="alm-cartao alm-rolagem-x">
+            <table mat-table [dataSource]="mensalidades()" class="alm-tabela">
+              <ng-container matColumnDef="competencia">
+                <th mat-header-cell *matHeaderCellDef>Competência</th>
+                <td mat-cell *matCellDef="let m">
+                  <strong>{{ m.competencia | competencia }}</strong>
+                  <small class="sub">{{ m.planoNome }}</small>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="vencimento">
+                <th mat-header-cell *matHeaderCellDef>Vencimento</th>
+                <td mat-cell *matCellDef="let m">
+                  {{ m.vencimentoEm | date: 'dd/MM/yyyy' }}
+                  @if (m.diasEmAtraso > 0) {
+                    <small class="sub atraso">{{ m.diasEmAtraso }} dia(s) em atraso</small>
+                  }
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="valor">
+                <th mat-header-cell *matHeaderCellDef>Valor</th>
+                <td mat-cell *matCellDef="let m" class="numerico">{{ m.valorCentavos | moeda }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Situação</th>
+                <td mat-cell *matCellDef="let m">
+                  <app-selo [rotulo]="rotulosMensalidade[m.status]" />
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="acoes">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let m" class="coluna-acoes">
+                  @if (m.status !== 'PAGA' && m.status !== 'CANCELADA') {
+                    <button matButton (click)="registrarPagamento(m)">
+                      <mat-icon>payments</mat-icon> Receber
+                    </button>
+                  } @else if (m.pagoEm) {
+                    <span class="pago-em">pago em {{ m.pagoEm | date: 'dd/MM' }}</span>
+                  }
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="colunasMensalidade"></tr>
+              <tr mat-row *matRowDef="let linha; columns: colunasMensalidade"></tr>
+            </table>
+          </div>
+        }
+
+        @if (historico().length > 0) {
+          <section class="alm-cartao historico">
+            <h2>Histórico financeiro</h2>
+            <ol class="linha-tempo">
+              @for (e of historico(); track e.id) {
+                <li>
+                  <span class="linha-tempo__ponto" [attr.data-tipo]="e.tipo"></span>
+                  <div>
+                    <strong>{{ e.tipo.replaceAll('_', ' ').toLowerCase() }}</strong>
+                    <span class="linha-tempo__detalhe">
+                      @if (e.competencia) {
+                        {{ e.competencia | competencia }}
+                      }
+                      @if (e.valorCentavos) {
+                        · {{ e.valorCentavos | moeda }}
+                      }
+                    </span>
+                    <small>{{ e.ocorridoEm | date: 'dd/MM/yyyy HH:mm' }}</small>
+                  </div>
+                </li>
+              }
+            </ol>
+          </section>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- ---------------------------- Frequência --------------------------- -->
+    <mat-tab label="Frequência">
+      <div class="painel-aba">
+        @if (frequencia().length === 0) {
+          <app-estado-vazio
+            icone="fact_check"
+            titulo="Nenhuma presença registrada"
+            descricao="As presenças aparecem aqui conforme o professor fecha a chamada."
+          />
+        } @else {
+          <div class="alm-cartao alm-rolagem-x">
+            <table mat-table [dataSource]="frequencia()" class="alm-tabela">
+              <ng-container matColumnDef="data">
+                <th mat-header-cell *matHeaderCellDef>Data da aula</th>
+                <td mat-cell *matCellDef="let f">
+                  {{ f.registradoEm | date: "dd/MM/yyyy 'às' HH:mm" }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="turma">
+                <th mat-header-cell *matHeaderCellDef>Modalidade</th>
+                <td mat-cell *matCellDef="let f">{{ f.modalidadeSlug }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Presença</th>
+                <td mat-cell *matCellDef="let f">
+                  <app-selo [rotulo]="rotulosFrequencia[f.status]" />
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="colunasFrequencia"></tr>
+              <tr mat-row *matRowDef="let linha; columns: colunasFrequencia"></tr>
+            </table>
+          </div>
+        }
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+}

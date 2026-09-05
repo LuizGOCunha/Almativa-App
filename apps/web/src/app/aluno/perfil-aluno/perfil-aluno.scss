@@ -1,0 +1,136 @@
+.senha {
+  padding: 22px;
+  margin-bottom: 20px;
+
+  h2 {
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+    margin-bottom: 14px;
+  }
+
+  form {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  mat-form-field {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  button {
+    margin-top: 8px;
+  }
+}
+
+.identificacao {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  padding: 20px 22px;
+  margin-bottom: 20px;
+
+  .rotulo {
+    display: block;
+    font-size: 0.6875rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  strong {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.9375rem;
+    text-transform: capitalize;
+  }
+
+  &__nota {
+    width: 100%;
+    margin: 4px 0 0;
+    font-size: 0.75rem;
+    color: var(--mat-sys-outline);
+  }
+}
+
+.matriculas {
+  margin-bottom: 20px;
+
+  h2 {
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+    margin-bottom: 10px;
+  }
+
+  &__lista {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+}
+
+.matricula {
+  padding: 18px 20px;
+
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  h3 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 8px 0 0;
+    font-size: 0.8125rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.formulario {
+  padding: 24px;
+
+  h2 {
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+    margin-bottom: 14px;
+
+    &:not(:first-child) {
+      margin-top: 18px;
+    }
+  }
+
+  button[type='submit'] {
+    margin-top: 10px;
+  }
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+
+  @media (max-width: 599px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.col-2 {
+  grid-column: 1 / -1;
+}
+
+mat-form-field {
+  width: 100%;
+}

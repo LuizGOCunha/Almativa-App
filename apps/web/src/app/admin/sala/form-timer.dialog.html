@@ -1,0 +1,93 @@
+<h2 mat-dialog-title>{{ editando ? 'Editar timer' : 'Novo timer' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" novalidate>
+    <div class="linha">
+      <mat-form-field class="cresce">
+        <mat-label>Nome</mat-label>
+        <input matInput formControlName="nome" placeholder="Jiu-Jitsu — Rola 6x5min" />
+      </mat-form-field>
+
+      <mat-form-field class="estreito">
+        <mat-label>Rounds</mat-label>
+        <input matInput type="number" formControlName="rounds" min="1" max="99" />
+      </mat-form-field>
+    </div>
+
+    <div class="linha">
+      <mat-form-field class="cresce">
+        <mat-label>Modalidade</mat-label>
+        <mat-select formControlName="modalidadeId">
+          <mat-option value="">Todas as modalidades</mat-option>
+          @for (m of modalidades(); track m.id) {
+            <mat-option [value]="m.id">{{ m.nome }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="estreito">
+        <mat-label>Aviso (s)</mat-label>
+        <input matInput type="number" formControlName="segundosAviso" min="0" max="60" />
+      </mat-form-field>
+    </div>
+
+    <mat-form-field>
+      <mat-label>Descrição (opcional)</mat-label>
+      <input matInput formControlName="descricao" />
+    </mat-form-field>
+
+    <mat-slide-toggle formControlName="avisoSonoro">
+      Tocar bipe na virada de cada intervalo
+    </mat-slide-toggle>
+
+    <h3>
+      Intervalos do round
+      <span class="total">total: {{ duracaoTotal() }}</span>
+    </h3>
+
+    <div formArrayName="intervalos" class="intervalos">
+      @for (grupo of intervalos.controls; track $index) {
+        <div class="intervalo" [formGroupName]="$index">
+          <mat-form-field class="tipo">
+            <mat-label>Tipo</mat-label>
+            <mat-select formControlName="tipo">
+              @for (t of tipos; track t.valor) {
+                <mat-option [value]="t.valor">{{ t.rotulo }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field class="cresce">
+            <mat-label>Rótulo na tela</mat-label>
+            <input matInput formControlName="rotulo" />
+          </mat-form-field>
+
+          <mat-form-field class="estreito">
+            <mat-label>Segundos</mat-label>
+            <input matInput type="number" formControlName="duracaoSegundos" min="1" />
+          </mat-form-field>
+
+          <button
+            matIconButton
+            type="button"
+            (click)="removerIntervalo($index)"
+            aria-label="Remover intervalo"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+
+    <button matButton type="button" (click)="adicionarIntervalo()">
+      <mat-icon>add</mat-icon> Adicionar intervalo
+    </button>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button matButton mat-dialog-close>Cancelar</button>
+  <button matButton="filled" (click)="salvar()" [disabled]="salvando()">
+    {{ editando ? 'Salvar' : 'Criar timer' }}
+  </button>
+</mat-dialog-actions>

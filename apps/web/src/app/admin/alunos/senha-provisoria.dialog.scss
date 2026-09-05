@@ -1,0 +1,53 @@
+h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+mat-dialog-content {
+  min-width: min(420px, 82vw);
+}
+
+.aviso {
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border-radius: var(--alm-raio-sm);
+  background: var(--alm-alerta-fundo);
+  color: var(--alm-alerta);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.credencial {
+  margin-bottom: 14px;
+
+  &__rotulo {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  code {
+    display: block;
+    padding: 11px 14px;
+    border-radius: var(--alm-raio-sm);
+    background: var(--mat-sys-surface-container-high);
+    font-family: ui-monospace, 'SF Mono', Consolas, monospace;
+    font-size: 0.9375rem;
+    word-break: break-all;
+  }
+
+  &__senha {
+    font-size: 1.125rem !important;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--alm-verde);
+  }
+}
+
+button[matButton] {
+  margin-top: 6px;
+}

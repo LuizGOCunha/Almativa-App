@@ -1,0 +1,144 @@
+.tela {
+  display: grid;
+  grid-template-columns: 1fr 0.9fr;
+  min-height: 100dvh;
+
+  @media (max-width: 899px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.painel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px clamp(24px, 6vw, 88px);
+  max-width: 560px;
+  width: 100%;
+  margin-inline: auto;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+
+  span {
+    font-family: Outfit, sans-serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: 0.16em;
+    color: var(--alm-verde);
+  }
+}
+
+h1 {
+  font-size: clamp(1.625rem, 1.4rem + 1vw, 2rem);
+  letter-spacing: -0.02em;
+  color: var(--alm-verde-escuro);
+}
+
+.subtitulo {
+  margin: 8px 0 32px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+form {
+  display: grid;
+  gap: 4px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+button[type='submit'] {
+  margin-top: 8px;
+  --mat-button-filled-container-height: 48px;
+}
+
+.erro {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  border-radius: var(--alm-raio-sm);
+  background: var(--alm-erro-fundo);
+  color: var(--alm-erro);
+  font-size: 0.875rem;
+  line-height: 1.5;
+
+  mat-icon {
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+    flex-shrink: 0;
+  }
+}
+
+.ajuda {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+
+  p {
+    margin: 0 0 14px;
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__tv {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--alm-teal);
+
+    mat-icon {
+      font-size: 19px;
+      width: 19px;
+      height: 19px;
+    }
+  }
+}
+
+.lateral {
+  display: grid;
+  place-items: center;
+  padding: 48px;
+  background:
+    radial-gradient(ellipse at 30% 20%, color-mix(in srgb, var(--alm-teal) 35%, transparent), transparent 60%),
+    var(--alm-verde-escuro);
+  color: white;
+
+  @media (max-width: 899px) {
+    display: none;
+  }
+
+  blockquote {
+    margin: 0;
+    max-width: 34ch;
+
+    p {
+      font-family: Outfit, sans-serif;
+      font-size: 1.5rem;
+      line-height: 1.45;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      text-wrap: balance;
+    }
+
+    cite {
+      display: block;
+      margin-top: 20px;
+      font-style: normal;
+      font-size: 0.875rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, white 55%, transparent);
+    }
+  }
+}

@@ -1,0 +1,153 @@
+<header class="alm-titulo-pagina">
+  <div>
+    <h1>Alunos</h1>
+    <p>{{ total() }} cadastro(s) encontrado(s)</p>
+  </div>
+  <button matButton="filled" (click)="novoAluno()">
+    <mat-icon>person_add</mat-icon>
+    Novo aluno
+  </button>
+</header>
+
+<section class="filtros alm-cartao">
+  <mat-form-field class="filtros__busca" subscriptSizing="dynamic">
+    <mat-label>Buscar por nome, e-mail, telefone ou CPF</mat-label>
+    <input matInput [formControl]="busca" />
+    <mat-icon matPrefix>search</mat-icon>
+  </mat-form-field>
+
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Situação</mat-label>
+    <mat-select [value]="status()" (valueChange)="status.set($event); aoFiltrar()">
+      <mat-option value="">Todas</mat-option>
+      <mat-option value="ATIVO">Ativos</mat-option>
+      <mat-option value="TRANCADO">Trancados</mat-option>
+      <mat-option value="INATIVO">Inativos</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Modalidade</mat-label>
+    <mat-select [value]="modalidadeId()" (valueChange)="modalidadeId.set($event); aoFiltrar()">
+      <mat-option value="">Todas</mat-option>
+      @for (m of modalidades(); track m.id) {
+        <mat-option [value]="m.id">{{ m.nome }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <button
+    matButton
+    [class.filtro-ativo]="somenteInadimplentes()"
+    (click)="somenteInadimplentes.set(!somenteInadimplentes()); aoFiltrar()"
+  >
+    <mat-icon>{{ somenteInadimplentes() ? 'filter_alt' : 'filter_alt_off' }}</mat-icon>
+    Inadimplentes
+  </button>
+
+  <button matIconButton (click)="limparFiltros()" aria-label="Limpar filtros">
+    <mat-icon>backspace</mat-icon>
+  </button>
+</section>
+
+@if (carregando()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+<section class="alm-cartao tabela">
+  @if (alunos().length === 0 && !carregando()) {
+    <app-estado-vazio
+      icone="group_off"
+      titulo="Nenhum aluno encontrado"
+      descricao="Ajuste os filtros ou cadastre o primeiro aluno."
+    >
+      <button matButton="filled" (click)="novoAluno()">Cadastrar aluno</button>
+    </app-estado-vazio>
+  } @else {
+    <div class="alm-rolagem-x">
+      <table mat-table [dataSource]="alunos()" class="alm-tabela">
+        <ng-container matColumnDef="aluno">
+          <th mat-header-cell *matHeaderCellDef>Aluno</th>
+          <td mat-cell *matCellDef="let a">
+            <a [routerLink]="['/admin/alunos', a.id]" class="celula-aluno">
+              <span class="avatar">{{ a.nome | iniciais }}</span>
+              <span>
+                <strong>{{ a.nome }}</strong>
+                <small>desde {{ a.dataMatricula | date: 'MM/yyyy' }}</small>
+              </span>
+            </a>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="contato">
+          <th mat-header-cell *matHeaderCellDef>Contato</th>
+          <td mat-cell *matCellDef="let a">
+            <span class="contato">
+              @if (a.email) {
+                <span><mat-icon>mail</mat-icon> {{ a.email }}</span>
+              }
+              @if (a.telefone) {
+                <span><mat-icon>call</mat-icon> {{ a.telefone | telefone }}</span>
+              }
+              @if (!a.email && !a.telefone) {
+                <em>sem contato</em>
+              }
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="planos">
+          <th mat-header-cell *matHeaderCellDef>Plano</th>
+          <td mat-cell *matCellDef="let a">
+            <span class="planos">{{ planosDo(a) }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Situação</th>
+          <td mat-cell *matCellDef="let a">
+            <app-selo [rotulo]="rotulos[a.status]" [comIcone]="false" />
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acoes">
+          <th mat-header-cell *matHeaderCellDef aria-label="Ações"></th>
+          <td mat-cell *matCellDef="let a" class="coluna-acoes">
+            <button matIconButton [matMenuTriggerFor]="menu" aria-label="Ações do aluno">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <a mat-menu-item [routerLink]="['/admin/alunos', a.id]">
+                <mat-icon>visibility</mat-icon><span>Abrir ficha</span>
+              </a>
+              <button mat-menu-item (click)="editar(a, $event)">
+                <mat-icon>edit</mat-icon><span>Editar cadastro</span>
+              </button>
+              <button mat-menu-item (click)="criarAcesso(a, $event)">
+                <mat-icon>key</mat-icon><span>Criar acesso</span>
+              </button>
+              <button mat-menu-item (click)="redefinirSenha(a, $event)">
+                <mat-icon>lock_reset</mat-icon><span>Redefinir senha</span>
+              </button>
+              <button mat-menu-item (click)="inativar(a, $event)" class="item-destrutivo">
+                <mat-icon>person_off</mat-icon><span>Inativar</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+        <tr mat-row *matRowDef="let linha; columns: colunas"></tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="total()"
+      [pageSize]="porPagina()"
+      [pageIndex]="pagina() - 1"
+      [pageSizeOptions]="[10, 20, 50, 100]"
+      (page)="aoPaginar($event)"
+      aria-label="Paginação de alunos"
+    />
+  }
+</section>

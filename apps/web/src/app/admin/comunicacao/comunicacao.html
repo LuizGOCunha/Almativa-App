@@ -1,0 +1,177 @@
+<header class="alm-titulo-pagina">
+  <div>
+    <h1>Comunicação</h1>
+    <p>Avisos do painel e campanhas para a área do aluno.</p>
+  </div>
+</header>
+
+@if (carregando()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+<mat-tab-group animationDuration="180ms">
+  <!-- ------------------------------ Avisos ------------------------------ -->
+  <mat-tab label="Avisos do painel">
+    <div class="painel-aba">
+      <div class="barra-avisos">
+        <button
+          matButton
+          [class.ativo]="somenteNaoLidas()"
+          (click)="somenteNaoLidas.set(!somenteNaoLidas()); carregar()"
+        >
+          <mat-icon>{{ somenteNaoLidas() ? 'mark_email_unread' : 'inbox' }}</mat-icon>
+          {{ somenteNaoLidas() ? 'Só não lidos' : 'Todos' }}
+        </button>
+        <button matButton="outlined" (click)="lerTodas()">
+          <mat-icon>done_all</mat-icon> Marcar tudo como lido
+        </button>
+      </div>
+
+      @if (notificacoes().length === 0) {
+        <app-estado-vazio
+          icone="notifications_off"
+          titulo="Nenhum aviso"
+          descricao="Vencimentos e alertas do sistema aparecem aqui."
+        />
+      } @else {
+        <ul class="avisos">
+          @for (n of notificacoes(); track n.id) {
+            <li [class.nao-lida]="!n.lidaEm" (click)="marcarLida(n)">
+              <span class="avisos__icone"><mat-icon>{{ icones[n.tipo] }}</mat-icon></span>
+              <div class="avisos__texto">
+                <strong>{{ n.titulo }}</strong>
+                <p>{{ n.mensagem }}</p>
+                <small>{{ n.criadoEm | date: "dd/MM 'às' HH:mm" }}</small>
+              </div>
+              @if (!n.lidaEm) {
+                <span class="avisos__ponto" aria-label="Não lido"></span>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </mat-tab>
+
+  <!-- ----------------------------- Campanhas ---------------------------- -->
+  <mat-tab label="Campanhas">
+    <div class="painel-aba campanhas">
+      <form [formGroup]="form" class="alm-cartao formulario" novalidate>
+        <h2>Nova campanha</h2>
+
+        <mat-form-field>
+          <mat-label>Nome interno</mat-label>
+          <input matInput formControlName="nome" placeholder="Reativação — alunos sumidos" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Título do aviso</mat-label>
+          <input matInput formControlName="mensagemTitulo" placeholder="Sentimos sua falta!" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Mensagem</mat-label>
+          <textarea
+            matInput
+            formControlName="mensagemCorpo"
+            rows="4"
+            [placeholder]="exemploMensagem"
+          ></textarea>
+          <mat-hint>Use {{ marcadorNome }} para inserir o primeiro nome do aluno.</mat-hint>
+        </mat-form-field>
+
+        <h3>Para quem</h3>
+
+        <mat-form-field>
+          <mat-label>Situação do aluno</mat-label>
+          <mat-select formControlName="statusAluno" multiple>
+            <mat-option value="ATIVO">Ativos</mat-option>
+            <mat-option value="TRANCADO">Trancados</mat-option>
+            <mat-option value="INATIVO">Inativos</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Modalidades</mat-label>
+          <mat-select formControlName="modalidadeSlugs" multiple>
+            @for (m of modalidades(); track m.id) {
+              <mat-option [value]="m.slug">{{ m.nome }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Sem presença há (dias)</mat-label>
+          <input matInput type="number" formControlName="semFrequenciaDesdeDias" min="1" max="365" />
+          <mat-hint>Deixe vazio para não filtrar por inatividade.</mat-hint>
+        </mat-form-field>
+
+        <mat-checkbox formControlName="comMensalidadeVencida">
+          Somente quem tem mensalidade vencida
+        </mat-checkbox>
+
+        <div class="previa">
+          <button matButton="outlined" type="button" (click)="calcularPrevia()">
+            <mat-icon>groups</mat-icon> Calcular público
+          </button>
+          @if (previa(); as p) {
+            <p>
+              <strong>{{ p.total }}</strong> aluno(s) nesse segmento.
+              @if (p.amostra.length > 0) {
+                <span>Ex.: {{ nomesAmostra(p.amostra) }}</span>
+              }
+            </p>
+          }
+        </div>
+
+        <div class="formulario__acoes">
+          <button matButton type="button" (click)="criarCampanha(false)" [disabled]="salvando()">
+            Salvar rascunho
+          </button>
+          <button matButton="filled" type="button" (click)="criarCampanha(true)" [disabled]="salvando()">
+            <mat-icon>send</mat-icon> Criar e enviar
+          </button>
+        </div>
+      </form>
+
+      <section class="lista-campanhas">
+        <h2>Histórico</h2>
+
+        @if (campanhas().length === 0) {
+          <app-estado-vazio icone="campaign" titulo="Nenhuma campanha criada ainda." />
+        } @else {
+          @for (c of campanhas(); track c.id) {
+            <article class="alm-cartao campanha">
+              <header>
+                <div>
+                  <h3>{{ c.nome }}</h3>
+                  <small>{{ c.criadoEm | date: 'dd/MM/yyyy' }}</small>
+                </div>
+                <app-selo [rotulo]="rotulosCampanha[c.status]" [comIcone]="false" />
+              </header>
+
+              <p class="campanha__mensagem">{{ c.mensagemCorpo }}</p>
+
+              <div class="campanha__metricas">
+                <span><strong>{{ c.metricas.alcancados }}</strong> alcançados</span>
+                <span><strong>{{ c.metricas.enviados }}</strong> enviados</span>
+                <span><strong>{{ c.metricas.lidos }}</strong> lidos</span>
+              </div>
+
+              @if (c.status === 'RASCUNHO' || c.status === 'AGENDADA') {
+                <div class="campanha__acoes">
+                  <button matButton="filled" (click)="enviar(c)">
+                    <mat-icon>send</mat-icon> Enviar
+                  </button>
+                  <button matButton (click)="cancelar(c)">Cancelar</button>
+                </div>
+              } @else if (c.enviadaEm) {
+                <small class="campanha__enviada">Enviada {{ c.enviadaEm | quando }}</small>
+              }
+            </article>
+          }
+        }
+      </section>
+    </div>
+  </mat-tab>
+</mat-tab-group>

@@ -1,0 +1,160 @@
+.aba {
+  display: grid;
+  grid-template-columns: minmax(300px, 380px) 1fr;
+  gap: 20px;
+  align-items: start;
+  padding-top: 20px;
+
+  @media (max-width: 1023px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.painel {
+  display: grid;
+  gap: 2px;
+  padding: 22px;
+  position: sticky;
+  top: 78px;
+
+  h2 {
+    font-size: 1rem;
+    color: var(--alm-verde-escuro);
+    margin-bottom: 12px;
+  }
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  mat-slide-toggle {
+    margin: 8px 0;
+  }
+
+  &__acoes {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+
+  @media (max-width: 1023px) {
+    position: static;
+  }
+}
+
+.linha {
+  display: flex;
+  gap: 12px;
+}
+
+.cresce {
+  flex: 1;
+  min-width: 0;
+}
+
+.estreito {
+  width: 88px;
+  flex-shrink: 0;
+}
+
+.cor {
+  width: 92px;
+  flex-shrink: 0;
+
+  input[type='color'] {
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+}
+
+.lista {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.grupo-dia {
+  margin: 14px 0 2px;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.linha-item {
+  --cor: var(--alm-verde);
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+
+  &.inativo {
+    opacity: 0.55;
+  }
+
+  &__texto {
+    flex: 1;
+    min-width: 0;
+
+    strong {
+      display: block;
+      font-size: 0.9375rem;
+      font-weight: 600;
+    }
+
+    small {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 2px;
+      font-size: 0.75rem;
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+}
+
+.bolinha {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--cor);
+}
+
+.hora {
+  flex-shrink: 0;
+  font-family: Outfit, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--alm-verde-escuro);
+  min-width: 92px;
+}
+
+.valor {
+  font-family: Outfit, sans-serif;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: var(--alm-verde);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tag {
+  --cor: var(--alm-verde);
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--cor) 14%, transparent);
+  color: var(--cor);
+  font-weight: 600;
+}

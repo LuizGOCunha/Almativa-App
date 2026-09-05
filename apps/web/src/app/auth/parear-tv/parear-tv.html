@@ -1,0 +1,45 @@
+<div class="tela">
+  <div class="cartao">
+    <app-logo [tamanho]="64" variante="clara" />
+
+    <h1>Parear tela da sala</h1>
+    <p class="subtitulo">
+      Cole o token gerado no painel administrativo em
+      <strong>Configurações → Dispositivos</strong>. Ele fica guardado neste aparelho.
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="parear()" novalidate>
+      <mat-form-field appearance="outline">
+        <mat-label>Token do dispositivo</mat-label>
+        <input matInput formControlName="token" autocomplete="off" spellcheck="false" />
+        <mat-icon matSuffix>vpn_key</mat-icon>
+        @if (form.controls.token.touched && form.controls.token.invalid) {
+          <mat-error>Cole o token completo.</mat-error>
+        }
+      </mat-form-field>
+
+      @if (erro()) {
+        <div class="erro" role="alert">
+          <mat-icon>error</mat-icon>
+          <span>{{ erro() }}</span>
+        </div>
+      }
+
+      @if (enviando()) {
+        <button matButton="filled" type="submit" disabled>
+          <mat-spinner diameter="18" />
+        </button>
+      } @else {
+        <button matButton="filled" type="submit">
+          <mat-icon>cast_connected</mat-icon>
+          Conectar esta tela
+        </button>
+      }
+    </form>
+
+    <a routerLink="/entrar" class="voltar">
+      <mat-icon>arrow_back</mat-icon>
+      Entrar com e-mail e senha
+    </a>
+  </div>
+</div>

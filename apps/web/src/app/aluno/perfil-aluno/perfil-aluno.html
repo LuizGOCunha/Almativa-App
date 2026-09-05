@@ -1,0 +1,155 @@
+<header class="alm-titulo-pagina">
+  <div>
+    <h1>Meus dados</h1>
+    <p>Mantenha seu contato e informações de saúde atualizados.</p>
+  </div>
+  <button matButton="outlined" (click)="mostrarTrocaSenha.set(!mostrarTrocaSenha())">
+    <mat-icon>lock</mat-icon> Alterar senha
+  </button>
+</header>
+
+@if (carregando()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+@if (mostrarTrocaSenha()) {
+  <section class="alm-cartao senha">
+    <h2>Alterar senha</h2>
+    <form [formGroup]="formSenha" (ngSubmit)="trocarSenha()" novalidate>
+      <mat-form-field>
+        <mat-label>Senha atual</mat-label>
+        <input matInput type="password" formControlName="senhaAtual" autocomplete="current-password" />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Nova senha</mat-label>
+        <input matInput type="password" formControlName="novaSenha" autocomplete="new-password" />
+        <mat-hint>Mínimo de 8 caracteres.</mat-hint>
+      </mat-form-field>
+
+      <button matButton="filled" type="submit" [disabled]="trocandoSenha()">Salvar senha</button>
+    </form>
+  </section>
+}
+
+@if (aluno(); as a) {
+  <section class="identificacao alm-cartao">
+    <div>
+      <span class="rotulo">Nome</span>
+      <strong>{{ a.nome }}</strong>
+    </div>
+    <div>
+      <span class="rotulo">E-mail</span>
+      <strong>{{ a.email ?? '—' }}</strong>
+    </div>
+    <div>
+      <span class="rotulo">Aluno desde</span>
+      <strong>{{ a.dataMatricula | date: "MMMM 'de' y" }}</strong>
+    </div>
+    <p class="identificacao__nota">
+      Para corrigir nome, CPF ou e-mail, fale com a recepção.
+    </p>
+  </section>
+
+  @if (a.matriculas.length > 0) {
+    <section class="matriculas">
+      <h2>Meus planos</h2>
+      <div class="matriculas__lista">
+        @for (m of a.matriculas; track m.id) {
+          <article class="alm-cartao matricula">
+            <header>
+              <h3>{{ m.plano.nome }}</h3>
+              <app-selo [rotulo]="rotulosMatricula[m.status]" [comIcone]="false" />
+            </header>
+            <p>
+              {{ m.plano.valorCentavos | moeda }} · vencimento dia {{ m.diaVencimento }}
+              @if (m.plano.aulasPorSemana) {
+                · {{ m.plano.aulasPorSemana }}x por semana
+              }
+            </p>
+          </article>
+        }
+      </div>
+    </section>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="salvar()" class="alm-cartao formulario" novalidate>
+    <h2>Contato e endereço</h2>
+
+    <div class="grade">
+      <mat-form-field>
+        <mat-label>Telefone</mat-label>
+        <input matInput formControlName="telefone" />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>CEP</mat-label>
+        <input matInput formControlName="cep" />
+      </mat-form-field>
+
+      <mat-form-field class="col-2">
+        <mat-label>Logradouro</mat-label>
+        <input matInput formControlName="logradouro" />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Número</mat-label>
+        <input matInput formControlName="numero" />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Complemento</mat-label>
+        <input matInput formControlName="complemento" />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Bairro</mat-label>
+        <input matInput formControlName="bairro" />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Cidade</mat-label>
+        <input matInput formControlName="cidade" />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>UF</mat-label>
+        <input matInput formControlName="uf" maxlength="2" />
+      </mat-form-field>
+    </div>
+
+    <h2>Emergência e saúde</h2>
+
+    <div class="grade">
+      <mat-form-field>
+        <mat-label>Contato de emergência</mat-label>
+        <input matInput formControlName="contatoEmergenciaNome" />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Telefone de emergência</mat-label>
+        <input matInput formControlName="contatoEmergenciaTelefone" />
+      </mat-form-field>
+
+      <mat-form-field class="col-2">
+        <mat-label>Observações médicas</mat-label>
+        <textarea
+          matInput
+          formControlName="observacoesMedicas"
+          rows="3"
+          placeholder="Lesões, cirurgias, restrições, medicação em uso…"
+        ></textarea>
+        <mat-hint>Seu professor e o fisioterapeuta leem isto antes da aula.</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field class="col-2">
+        <mat-label>Meus objetivos</mat-label>
+        <textarea matInput formControlName="objetivos" rows="2"></textarea>
+      </mat-form-field>
+    </div>
+
+    <button matButton="filled" type="submit" [disabled]="salvando() || form.pristine">
+      <mat-icon>save</mat-icon> Salvar alterações
+    </button>
+  </form>
+}

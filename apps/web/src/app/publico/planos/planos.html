@@ -1,0 +1,76 @@
+<header class="capa">
+  <div class="alm-container">
+    <h1>Planos e valores</h1>
+    <p>
+      Preço claro, sem taxa de matrícula e sem letra miúda. Quanto maior o ciclo, menor o valor
+      mensal.
+    </p>
+  </div>
+</header>
+
+<div class="alm-container">
+  @for (grupo of grupos(); track grupo.titulo) {
+    <section class="grupo" [style.--cor]="grupo.cor">
+      <h2>{{ grupo.titulo }}</h2>
+
+      <div class="cartoes">
+        @for (p of grupo.planos; track p.id) {
+          <article class="cartao">
+            <h3>{{ p.nome }}</h3>
+
+            <p class="cartao__valor">
+              {{ p.valorMensalCentavos | moeda }}<small>/mês</small>
+            </p>
+
+            @if (p.periodicidade !== 'MENSAL') {
+              <p class="cartao__cobranca">
+                cobrado {{ p.valorCentavos | moeda }} a cada
+                {{ p.periodicidade === 'TRIMESTRAL' ? '3 meses' : p.periodicidade === 'SEMESTRAL' ? '6 meses' : '12 meses' }}
+              </p>
+            }
+
+            @if (p.economia > 0) {
+              <span class="alm-selo alm-selo--sucesso">economia de {{ p.economia }}%</span>
+            }
+
+            <ul class="cartao__itens">
+              @if (p.aulasPorSemana) {
+                <li><mat-icon>event_repeat</mat-icon> {{ p.aulasPorSemana }} aulas por semana</li>
+              }
+              <li><mat-icon>event_available</mat-icon> Check-in e agenda pelo app</li>
+              <li><mat-icon>insights</mat-icon> Histórico de frequência</li>
+              <li><mat-icon>calendar_month</mat-icon> Vencimento no dia que você escolher</li>
+              @if (!p.modalidade) {
+                <li><mat-icon>all_inclusive</mat-icon> Todas as modalidades liberadas</li>
+              }
+            </ul>
+
+            @if (p.descricao) {
+              <p class="cartao__descricao">{{ p.descricao }}</p>
+            }
+
+            <a matButton="filled" routerLink="/contato" class="cartao__acao">Quero este plano</a>
+          </article>
+        }
+      </div>
+    </section>
+  } @empty {
+    <div class="alm-vazio">
+      <mat-icon>sell</mat-icon>
+      <strong>Nenhum plano publicado.</strong>
+      <span>Fale com a recepção para conhecer os valores.</span>
+    </div>
+  }
+
+  <section class="faq">
+    <h2>Perguntas frequentes</h2>
+    <div class="faq__lista">
+      @for (item of perguntas; track item.pergunta) {
+        <details>
+          <summary>{{ item.pergunta }}<mat-icon>expand_more</mat-icon></summary>
+          <p>{{ item.resposta }}</p>
+        </details>
+      }
+    </div>
+  </section>
+</div>

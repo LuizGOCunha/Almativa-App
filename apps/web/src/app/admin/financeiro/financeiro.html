@@ -1,0 +1,164 @@
+<header class="alm-titulo-pagina">
+  <div>
+    <h1>Financeiro</h1>
+    <p>Mensalidades por competência, recebimentos e estornos.</p>
+  </div>
+  <div class="acoes">
+    <button matButton="outlined" (click)="marcarVencidas()" [disabled]="processando()">
+      <mat-icon>update</mat-icon> Atualizar vencidas
+    </button>
+    <button matButton="filled" (click)="gerarCompetencia()" [disabled]="processando()">
+      <mat-icon>receipt_long</mat-icon> Gerar mensalidades
+    </button>
+  </div>
+</header>
+
+<section class="totais">
+  <article class="total total--sucesso">
+    <span>Recebido</span><strong>{{ totais().pago | moeda }}</strong>
+  </article>
+  <article class="total"><span>Em aberto</span><strong>{{ totais().aberto | moeda }}</strong></article>
+  <article class="total total--erro">
+    <span>Vencido</span><strong>{{ totais().vencido | moeda }}</strong>
+  </article>
+  <p class="totais__nota">Valores da seleção atual ({{ total() }} cobrança(s)).</p>
+</section>
+
+<section class="filtros alm-cartao">
+  <mat-form-field class="filtros__busca" subscriptSizing="dynamic">
+    <mat-label>Buscar aluno</mat-label>
+    <input matInput [formControl]="busca" />
+    <mat-icon matPrefix>search</mat-icon>
+  </mat-form-field>
+
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Competência</mat-label>
+    <mat-select [value]="competencia()" (valueChange)="competencia.set($event); aoFiltrar()">
+      <mat-option value="">Todas</mat-option>
+      @for (c of competencias(); track c) {
+        <mat-option [value]="c">{{ rotuloCompetencia(c) }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Situação</mat-label>
+    <mat-select [value]="status()" (valueChange)="status.set($event); aoFiltrar()">
+      <mat-option value="">Todas</mat-option>
+      <mat-option value="ABERTA">Em aberto</mat-option>
+      <mat-option value="VENCIDA">Vencidas</mat-option>
+      <mat-option value="PAGA">Pagas</mat-option>
+      <mat-option value="CANCELADA">Canceladas</mat-option>
+    </mat-select>
+  </mat-form-field>
+</section>
+
+@if (carregando() || processando()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+<section class="alm-cartao">
+  @if (mensalidades().length === 0 && !carregando()) {
+    <app-estado-vazio
+      icone="receipt_long"
+      titulo="Nenhuma mensalidade nesta seleção"
+      descricao="Gere as cobranças da competência ou ajuste os filtros."
+    >
+      <button matButton="filled" (click)="gerarCompetencia()">Gerar mensalidades</button>
+    </app-estado-vazio>
+  } @else {
+    <div class="alm-rolagem-x">
+      <table mat-table [dataSource]="mensalidades()" class="alm-tabela">
+        <ng-container matColumnDef="aluno">
+          <th mat-header-cell *matHeaderCellDef>Aluno</th>
+          <td mat-cell *matCellDef="let m">
+            @if (m.aluno) {
+              <a [routerLink]="['/admin/alunos', m.aluno.id]" class="link-aluno">
+                <strong>{{ m.aluno.nome }}</strong>
+                <small>{{ m.planoNome }}</small>
+              </a>
+            } @else {
+              <span>—</span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="competencia">
+          <th mat-header-cell *matHeaderCellDef>Competência</th>
+          <td mat-cell *matCellDef="let m">{{ m.competencia | competencia }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="vencimento">
+          <th mat-header-cell *matHeaderCellDef>Vencimento</th>
+          <td mat-cell *matCellDef="let m">
+            {{ m.vencimentoEm | date: 'dd/MM/yyyy' }}
+            @if (m.diasEmAtraso > 0) {
+              <small class="atraso">{{ m.diasEmAtraso }} dia(s) em atraso</small>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="valor">
+          <th mat-header-cell *matHeaderCellDef>Valor</th>
+          <td mat-cell *matCellDef="let m" class="numerico">{{ m.valorCentavos | moeda }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Situação</th>
+          <td mat-cell *matCellDef="let m">
+            <app-selo [rotulo]="rotulos[m.status]" />
+            @if (m.pagoEm) {
+              <small class="pago">{{ m.pagoEm | date: 'dd/MM/yyyy' }}</small>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acoes">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let m" class="coluna-acoes">
+            @if (m.status !== 'PAGA' && m.status !== 'CANCELADA') {
+              <button matButton="filled" (click)="receber(m)">
+                <mat-icon>payments</mat-icon> Receber
+              </button>
+            }
+            <button matIconButton [matMenuTriggerFor]="menu" aria-label="Mais ações">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              @if (m.aluno) {
+                <a mat-menu-item [routerLink]="['/admin/alunos', m.aluno.id]">
+                  <mat-icon>person</mat-icon><span>Abrir ficha</span>
+                </a>
+              }
+              @if (m.status === 'PAGA' && m.pagamentos.length > 0) {
+                <button mat-menu-item (click)="estornar(m)">
+                  <mat-icon>undo</mat-icon><span>Estornar pagamento</span>
+                </button>
+              }
+              @if (m.status !== 'PAGA' && m.status !== 'CANCELADA') {
+                <button mat-menu-item (click)="cancelar(m)">
+                  <mat-icon>block</mat-icon><span>Cancelar cobrança</span>
+                </button>
+              }
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+        <tr
+          mat-row
+          *matRowDef="let linha; columns: colunas"
+          [class.linha-vencida]="linha.status === 'VENCIDA'"
+        ></tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="total()"
+      [pageSize]="porPagina()"
+      [pageIndex]="pagina() - 1"
+      [pageSizeOptions]="[25, 50, 100]"
+      (page)="aoPaginar($event)"
+    />
+  }
+</section>

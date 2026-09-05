@@ -1,0 +1,389 @@
+// Almativa - modelo relacional (PostgreSQL).
+// Guarda cadastro, financeiro, autenticacao e configuracoes - dados de baixa
+// mutabilidade e que exigem integridade referencial.
+// Os eventos de alta rotatividade (checkin, frequencia, notificacoes,
+// campanhas, eventos de pagamento) ficam no MongoDB - ver src/db/mongo.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  runtime      = "nodejs"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  ALUNO
+  AULA
+}
+
+enum StatusAluno {
+  ATIVO
+  INATIVO
+  TRANCADO
+}
+
+enum StatusMatricula {
+  ATIVA
+  SUSPENSA
+  CANCELADA
+}
+
+enum Periodicidade {
+  MENSAL
+  TRIMESTRAL
+  SEMESTRAL
+  ANUAL
+}
+
+enum StatusMensalidade {
+  ABERTA
+  PAGA
+  VENCIDA
+  CANCELADA
+}
+
+enum MetodoPagamento {
+  PIX
+  CARTAO_CREDITO
+  CARTAO_DEBITO
+  DINHEIRO
+  BOLETO
+  TRANSFERENCIA
+}
+
+enum StatusAula {
+  AGENDADA
+  EM_ANDAMENTO
+  REALIZADA
+  CANCELADA
+}
+
+/// Credencial de acesso. Um aluno tem no maximo um usuario vinculado.
+model Usuario {
+  id                 String    @id @default(uuid()) @db.Uuid
+  email              String    @unique
+  senhaHash          String
+  nome               String
+  role               Role      @default(ALUNO)
+  ativo              Boolean   @default(true)
+  precisaTrocarSenha Boolean   @default(false)
+  ultimoLoginEm      DateTime?
+  criadoEm           DateTime  @default(now())
+  atualizadoEm       DateTime  @updatedAt
+
+  alunoId String? @unique @db.Uuid
+  aluno   Aluno?  @relation(fields: [alunoId], references: [id], onDelete: SetNull)
+
+  refreshTokens RefreshToken[]
+  pagamentos    Pagamento[]
+
+  @@index([role, ativo])
+  @@map("usuarios")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  tokenHash String    @unique
+  usuarioId String    @db.Uuid
+  usuario   Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  expiraEm  DateTime
+  revogadoEm DateTime?
+  userAgent String?
+  ip        String?
+  criadoEm  DateTime  @default(now())
+
+  @@index([usuarioId, revogadoEm])
+  @@map("refresh_tokens")
+}
+
+/// Dispositivo fisico da sala (TV / tablet) que roda o perfil AULA.
+model Dispositivo {
+  id            String    @id @default(uuid()) @db.Uuid
+  nome          String
+  sala          String?
+  tokenHash     String    @unique
+  ativo         Boolean   @default(true)
+  ultimoAcessoEm DateTime?
+  expiraEm      DateTime
+  criadoEm      DateTime  @default(now())
+
+  @@map("dispositivos")
+}
+
+model Modalidade {
+  id        String   @id @default(uuid()) @db.Uuid
+  nome      String   @unique
+  slug      String   @unique
+  descricao String?
+  /// Cor hex usada nos badges do front.
+  cor       String   @default("#1E4D3B")
+  icone     String?
+  ordem     Int      @default(0)
+  ativo     Boolean  @default(true)
+  criadoEm  DateTime @default(now())
+
+  planos     Plano[]
+  turmas     Turma[]
+  instrutores Instrutor[] @relation("InstrutorModalidades")
+  timers     TimerPreset[]
+  playlists  Playlist[]
+
+  @@map("modalidades")
+}
+
+model Instrutor {
+  id                   String   @id @default(uuid()) @db.Uuid
+  nome                 String
+  email                String?  @unique
+  telefone             String?
+  bio                  String?
+  registroProfissional String?
+  fotoUrl              String?
+  ativo                Boolean  @default(true)
+  criadoEm             DateTime @default(now())
+  atualizadoEm         DateTime @updatedAt
+
+  modalidades Modalidade[] @relation("InstrutorModalidades")
+  turmas      Turma[]
+  aulas       Aula[]
+
+  @@map("instrutores")
+}
+
+model Aluno {
+  id                       String      @id @default(uuid()) @db.Uuid
+  nome                     String
+  email                    String?     @unique
+  telefone                 String?
+  cpf                      String?     @unique
+  dataNascimento           DateTime?   @db.Date
+  fotoUrl                  String?
+  status                   StatusAluno @default(ATIVO)
+
+  logradouro   String?
+  numero       String?
+  complemento  String?
+  bairro       String?
+  cidade       String?
+  uf           String?     @db.Char(2)
+  cep          String?
+
+  contatoEmergenciaNome     String?
+  contatoEmergenciaTelefone String?
+  observacoesMedicas        String?
+  objetivos                 String?
+
+  dataMatricula DateTime @default(now()) @db.Date
+  criadoEm      DateTime @default(now())
+  atualizadoEm  DateTime @updatedAt
+
+  usuario       Usuario?
+  matriculas    Matricula[]
+  mensalidades  Mensalidade[]
+  pagamentos    Pagamento[]
+
+  @@index([status, nome])
+  @@map("alunos")
+}
+
+model Plano {
+  id                  String        @id @default(uuid()) @db.Uuid
+  nome                String
+  descricao           String?
+  modalidadeId        String?       @db.Uuid
+  modalidade          Modalidade?   @relation(fields: [modalidadeId], references: [id], onDelete: SetNull)
+  valorCentavos       Int
+  periodicidade       Periodicidade @default(MENSAL)
+  aulasPorSemana      Int?
+  diaVencimentoPadrao Int           @default(10)
+  ordem               Int           @default(0)
+  ativo               Boolean       @default(true)
+  criadoEm            DateTime      @default(now())
+  atualizadoEm        DateTime      @updatedAt
+
+  matriculas Matricula[]
+
+  @@index([ativo, modalidadeId])
+  @@map("planos")
+}
+
+model Matricula {
+  id           String          @id @default(uuid()) @db.Uuid
+  alunoId      String          @db.Uuid
+  aluno        Aluno           @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  planoId      String          @db.Uuid
+  plano        Plano           @relation(fields: [planoId], references: [id])
+  dataInicio   DateTime        @db.Date
+  dataFim      DateTime?       @db.Date
+  diaVencimento Int            @default(10)
+  status       StatusMatricula @default(ATIVA)
+  observacao   String?
+  criadoEm     DateTime        @default(now())
+  atualizadoEm DateTime        @updatedAt
+
+  mensalidades Mensalidade[]
+
+  @@index([alunoId, status])
+  @@index([status])
+  @@map("matriculas")
+}
+
+/// Horario recorrente na grade semanal (ex.: Pilates seg/qua 07:00).
+model Turma {
+  id           String     @id @default(uuid()) @db.Uuid
+  nome         String
+  modalidadeId String     @db.Uuid
+  modalidade   Modalidade @relation(fields: [modalidadeId], references: [id], onDelete: Cascade)
+  instrutorId  String?    @db.Uuid
+  instrutor    Instrutor? @relation(fields: [instrutorId], references: [id], onDelete: SetNull)
+  /// 0 = domingo (compativel com Date.getDay()).
+  diaSemana    Int
+  horaInicio   String
+  horaFim      String
+  capacidade   Int        @default(12)
+  sala         String?
+  nivel        String?
+  ativo        Boolean    @default(true)
+  criadoEm     DateTime   @default(now())
+  atualizadoEm DateTime   @updatedAt
+
+  aulas Aula[]
+
+  @@index([ativo, diaSemana, horaInicio])
+  @@map("turmas")
+}
+
+/// Ocorrencia concreta de uma turma em uma data. Checkins e frequencia
+/// vivem no Mongo referenciando aulaId.
+model Aula {
+  id          String     @id @default(uuid()) @db.Uuid
+  turmaId     String     @db.Uuid
+  turma       Turma      @relation(fields: [turmaId], references: [id], onDelete: Cascade)
+  instrutorId String?    @db.Uuid
+  instrutor   Instrutor? @relation(fields: [instrutorId], references: [id], onDelete: SetNull)
+  inicioEm    DateTime
+  fimEm       DateTime
+  capacidade  Int
+  status      StatusAula @default(AGENDADA)
+  observacoes String?
+  criadoEm    DateTime   @default(now())
+  atualizadoEm DateTime  @updatedAt
+
+  @@unique([turmaId, inicioEm])
+  @@index([inicioEm, status])
+  @@map("aulas")
+}
+
+/// Cobranca de uma competencia (YYYY-MM) para uma matricula.
+model Mensalidade {
+  id            String            @id @default(uuid()) @db.Uuid
+  matriculaId   String            @db.Uuid
+  matricula     Matricula         @relation(fields: [matriculaId], references: [id], onDelete: Cascade)
+  alunoId       String            @db.Uuid
+  aluno         Aluno             @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  competencia   String
+  valorCentavos Int
+  vencimentoEm  DateTime          @db.Date
+  status        StatusMensalidade @default(ABERTA)
+  pagoEm        DateTime?
+  observacao    String?
+  criadoEm      DateTime          @default(now())
+  atualizadoEm  DateTime          @updatedAt
+
+  pagamentos Pagamento[]
+
+  @@unique([matriculaId, competencia])
+  @@index([status, vencimentoEm])
+  @@index([alunoId, competencia])
+  @@map("mensalidades")
+}
+
+model Pagamento {
+  id                String          @id @default(uuid()) @db.Uuid
+  mensalidadeId     String          @db.Uuid
+  mensalidade       Mensalidade     @relation(fields: [mensalidadeId], references: [id], onDelete: Cascade)
+  alunoId           String          @db.Uuid
+  aluno             Aluno           @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  valorCentavos     Int
+  metodo            MetodoPagamento
+  pagoEm            DateTime
+  referenciaExterna String?
+  observacao        String?
+  registradoPorId   String?         @db.Uuid
+  registradoPor     Usuario?        @relation(fields: [registradoPorId], references: [id], onDelete: SetNull)
+  estornadoEm       DateTime?
+  criadoEm          DateTime        @default(now())
+
+  @@index([alunoId, pagoEm])
+  @@index([pagoEm])
+  @@map("pagamentos")
+}
+
+/// Preset de cronometro exibido na tela da sala (perfil AULA).
+/// `intervalos` e um array de { tipo, rotulo, duracaoSegundos }.
+model TimerPreset {
+  id             String      @id @default(uuid()) @db.Uuid
+  nome           String
+  descricao      String?
+  modalidadeId   String?     @db.Uuid
+  modalidade     Modalidade? @relation(fields: [modalidadeId], references: [id], onDelete: SetNull)
+  rounds         Int         @default(1)
+  intervalos     Json
+  avisoSonoro    Boolean     @default(true)
+  segundosAviso  Int         @default(10)
+  ordem          Int         @default(0)
+  ativo          Boolean     @default(true)
+  criadoEm       DateTime    @default(now())
+  atualizadoEm   DateTime    @updatedAt
+
+  @@map("timer_presets")
+}
+
+/// Playlist de YouTube tocada durante a aula.
+/// `itens` e um array de { videoId, titulo, duracaoSegundos, inicioEm }.
+model Playlist {
+  id            String      @id @default(uuid()) @db.Uuid
+  nome          String
+  descricao     String?
+  modalidadeId  String?     @db.Uuid
+  modalidade    Modalidade? @relation(fields: [modalidadeId], references: [id], onDelete: SetNull)
+  itens         Json
+  somenteAudio  Boolean     @default(false)
+  volumePadrao  Int         @default(40)
+  embaralhar    Boolean     @default(false)
+  ordem         Int         @default(0)
+  ativo         Boolean     @default(true)
+  criadoEm      DateTime    @default(now())
+  atualizadoEm  DateTime    @updatedAt
+
+  @@map("playlists")
+}
+
+/// Contato enviado pelo site publico.
+model Lead {
+  id                  String   @id @default(uuid()) @db.Uuid
+  nome                String
+  email               String
+  telefone            String
+  modalidadeInteresse String?
+  mensagem            String
+  atendido            Boolean  @default(false)
+  criadoEm            DateTime @default(now())
+
+  @@index([atendido, criadoEm])
+  @@map("leads")
+}
+
+/// Chave-valor para textos e ajustes do site publico (horarios, endereco...).
+model Configuracao {
+  chave        String   @id
+  valor        Json
+  atualizadoEm DateTime @updatedAt
+
+  @@map("configuracoes")
+}

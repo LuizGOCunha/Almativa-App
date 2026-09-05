@@ -1,0 +1,71 @@
+<header class="capa">
+  <div class="alm-container">
+    <h1>Grade semanal</h1>
+    <p>
+      Horários fixos das turmas. Alunos matriculados garantem a vaga com check-in pelo app — a
+      turma tem limite de pessoas.
+    </p>
+
+    <mat-chip-listbox class="filtros" aria-label="Filtrar por modalidade">
+      @for (m of modalidades(); track m.id) {
+        <mat-chip-option
+          [selected]="filtro() === m.slug"
+          (click)="alternarFiltro(m.slug)"
+          [style.--cor]="m.cor"
+        >
+          {{ m.nome }}
+        </mat-chip-option>
+      }
+    </mat-chip-listbox>
+  </div>
+</header>
+
+<div class="alm-container">
+  @if (totalAulas() === 0) {
+    <div class="alm-vazio">
+      <mat-icon>event_busy</mat-icon>
+      <strong>Nenhuma turma nessa seleção.</strong>
+      <span>Tente outro filtro ou fale com a recepção.</span>
+    </div>
+  } @else {
+    <div class="alm-rolagem-x">
+      <div class="grade" [style.--colunas]="colunas().length">
+        @for (coluna of colunas(); track coluna.valor) {
+          <div class="grade__coluna" [class.grade__coluna--hoje]="coluna.valor === hoje">
+            <h2 class="grade__dia">
+              <span class="grade__dia-curto">{{ coluna.curto }}</span>
+              <span class="grade__dia-longo">{{ coluna.longo }}</span>
+              @if (coluna.valor === hoje) {
+                <span class="grade__hoje">hoje</span>
+              }
+            </h2>
+
+            @for (aula of coluna.aulas; track aula.turmaId) {
+              <article class="aula" [style.--cor]="aula.cor">
+                <span class="aula__hora">{{ aula.horaInicio }}</span>
+                <h3>{{ aula.nome }}</h3>
+                <span class="aula__modalidade">{{ aula.modalidade }}</span>
+                <dl class="aula__meta">
+                  @if (aula.instrutor) {
+                    <div><dt><mat-icon>person</mat-icon></dt><dd>{{ aula.instrutor }}</dd></div>
+                  }
+                  <div><dt><mat-icon>group</mat-icon></dt><dd>{{ aula.capacidade }} vagas</dd></div>
+                  @if (aula.nivel) {
+                    <div><dt><mat-icon>signal_cellular_alt</mat-icon></dt><dd>{{ aula.nivel }}</dd></div>
+                  }
+                </dl>
+              </article>
+            } @empty {
+              <p class="grade__vazio">sem turmas</p>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <div class="rodape-acoes">
+    <a matButton="filled" routerLink="/contato">Quero experimentar uma aula</a>
+    <a matButton routerLink="/entrar">Já sou aluno — fazer check-in</a>
+  </div>
+</div>

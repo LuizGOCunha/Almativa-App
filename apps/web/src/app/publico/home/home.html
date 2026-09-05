@@ -1,0 +1,184 @@
+<section class="hero">
+  <div class="alm-container hero__grade">
+    <div class="hero__texto">
+      <span class="hero__selo">
+        <mat-icon>spa</mat-icon>
+        Pilates · Jiu-Jitsu · Fisioterapia
+      </span>
+
+      <h1>{{ config().site?.chamada ?? 'Movimento com propósito.' }}</h1>
+
+      <p class="hero__subtitulo">
+        {{
+          config().site?.subtitulo ??
+            'Um time que cuida do seu corpo com técnica e atenção individual — do primeiro dia de reabilitação até o pódio.'
+        }}
+      </p>
+
+      <div class="hero__acoes">
+        <a matButton="filled" routerLink="/contato" class="hero__cta">
+          Agendar aula experimental
+          <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+        </a>
+        <a matButton="outlined" routerLink="/horarios">Ver horários</a>
+      </div>
+
+      <dl class="hero__numeros">
+        <div>
+          <dt>{{ modalidades().length }}</dt>
+          <dd>modalidades</dd>
+        </div>
+        <div>
+          <dt>8</dt>
+          <dd>alunos por turma</dd>
+        </div>
+        <div>
+          <dt>{{ instrutores().length }}</dt>
+          <dd>profissionais</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="hero__marca" aria-hidden="true">
+      <div class="hero__anel"></div>
+      <app-logo [tamanho]="220" />
+    </div>
+  </div>
+</section>
+
+<section class="secao alm-container" id="modalidades">
+  <header class="secao__cabecalho">
+    <h2>O que fazemos</h2>
+    <p>Três frentes que se conversam — você escolhe por onde começar.</p>
+  </header>
+
+  <div class="modalidades">
+    @for (m of modalidades(); track m.id) {
+      <article class="modalidade" [style.--cor]="m.cor">
+        <span class="modalidade__icone">
+          <mat-icon>{{ m.icone ?? 'fitness_center' }}</mat-icon>
+        </span>
+        <h3>{{ m.nome }}</h3>
+        <p>{{ m.descricao }}</p>
+        <a [routerLink]="['/modalidades']" [fragment]="m.slug" class="modalidade__link">
+          Saiba mais <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </article>
+    } @empty {
+      <div class="alm-vazio">
+        <mat-icon>hourglass_empty</mat-icon>
+        <strong>Carregando modalidades…</strong>
+        <span>Se demorar, confira se a API está no ar.</span>
+      </div>
+    }
+  </div>
+</section>
+
+<section class="secao secao--creme">
+  <div class="alm-container">
+    <header class="secao__cabecalho">
+      <h2>Por que a Almativa</h2>
+      <p>{{ config().site?.sobre ?? 'Reabilitação e treino sob o mesmo teto, e o mesmo cuidado.' }}</p>
+    </header>
+
+    <div class="diferenciais">
+      @for (d of diferenciais(); track d.titulo) {
+        <article class="diferencial">
+          <mat-icon>{{ d.icone }}</mat-icon>
+          <h3>{{ d.titulo }}</h3>
+          <p>{{ d.texto }}</p>
+        </article>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="secao alm-container">
+  <header class="secao__cabecalho">
+    <h2>Planos</h2>
+    <p>Sem fidelidade escondida. Cancele quando quiser, avisando com 30 dias.</p>
+  </header>
+
+  <div class="planos">
+    @for (p of planos().slice(0, 3); track p.id) {
+      <article class="plano" [class.plano--destaque]="$index === 1">
+        @if ($index === 1) {
+          <span class="plano__fita">Mais escolhido</span>
+        }
+        <h3>{{ p.nome }}</h3>
+        @if (p.modalidade) {
+          <span class="plano__modalidade" [style.--cor]="p.modalidade.cor">
+            {{ p.modalidade.nome }}
+          </span>
+        }
+        <p class="plano__valor">
+          {{ p.valorCentavos | moeda
+          }}<small>/{{ p.periodicidade === 'MENSAL' ? 'mês' : 'ciclo' }}</small>
+        </p>
+        @if (p.aulasPorSemana) {
+          <p class="plano__detalhe">
+            <mat-icon>event_repeat</mat-icon> {{ p.aulasPorSemana }}x por semana
+          </p>
+        }
+        @if (p.descricao) {
+          <p class="plano__descricao">{{ p.descricao }}</p>
+        }
+        <a matButton="filled" routerLink="/contato">Quero este</a>
+      </article>
+    }
+  </div>
+
+  <div class="planos__rodape">
+    <a matButton routerLink="/planos">
+      Ver todos os planos <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+    </a>
+  </div>
+</section>
+
+@if (instrutores().length > 0) {
+  <section class="secao secao--creme">
+    <div class="alm-container">
+      <header class="secao__cabecalho">
+        <h2>Quem vai te acompanhar</h2>
+        <p>Profissionais registrados, com formação específica em cada frente.</p>
+      </header>
+
+      <div class="equipe">
+        @for (i of instrutores(); track i.id) {
+          <article class="pessoa">
+            <div class="pessoa__foto" aria-hidden="true">
+              @if (i.fotoUrl) {
+                <img [src]="i.fotoUrl" [alt]="i.nome" />
+              } @else {
+                <mat-icon>person</mat-icon>
+              }
+            </div>
+            <h3>{{ i.nome }}</h3>
+            <div class="pessoa__tags">
+              @for (m of i.modalidades; track m.id) {
+                <span class="alm-selo alm-selo--neutro">{{ m.nome }}</span>
+              }
+            </div>
+            @if (i.bio) {
+              <p>{{ i.bio }}</p>
+            }
+            @if (i.registroProfissional) {
+              <small>{{ i.registroProfissional }}</small>
+            }
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+}
+
+<section class="cta">
+  <div class="alm-container cta__conteudo">
+    <h2>A primeira aula é por nossa conta.</h2>
+    <p>Venha conhecer o espaço, conversar com o professor e testar sem compromisso.</p>
+    <a matButton="filled" routerLink="/contato" class="cta__botao">
+      Agendar aula experimental
+      <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+    </a>
+  </div>
+</section>

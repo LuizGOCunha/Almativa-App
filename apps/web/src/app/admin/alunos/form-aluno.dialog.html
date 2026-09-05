@@ -1,0 +1,132 @@
+<h2 mat-dialog-title>{{ editando ? 'Editar aluno' : 'Novo aluno' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="form" novalidate>
+    <h3>Dados pessoais</h3>
+
+    <mat-form-field class="col-2">
+      <mat-label>Nome completo</mat-label>
+      <input matInput formControlName="nome" />
+      @if (form.controls.nome.touched && form.controls.nome.invalid) {
+        <mat-error>Informe o nome completo.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>E-mail</mat-label>
+      <input matInput type="email" formControlName="email" />
+      @if (form.controls.email.hasError('email')) {
+        <mat-error>E-mail inválido.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Telefone</mat-label>
+      <input matInput formControlName="telefone" placeholder="(11) 99999-9999" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>CPF</mat-label>
+      <input matInput formControlName="cpf" />
+      @if (form.controls.cpf.hasError('cpf')) {
+        <mat-error>CPF inválido.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Nascimento</mat-label>
+      <input matInput [matDatepicker]="dp" formControlName="dataNascimento" />
+      <mat-datepicker-toggle matIconSuffix [for]="dp" />
+      <mat-datepicker #dp />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Situação</mat-label>
+      <mat-select formControlName="status">
+        <mat-option value="ATIVO">Ativo</mat-option>
+        <mat-option value="TRANCADO">Trancado</mat-option>
+        <mat-option value="INATIVO">Inativo</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <h3>Endereço</h3>
+
+    <mat-form-field>
+      <mat-label>CEP</mat-label>
+      <input matInput formControlName="cep" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Logradouro</mat-label>
+      <input matInput formControlName="logradouro" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Número</mat-label>
+      <input matInput formControlName="numero" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Bairro</mat-label>
+      <input matInput formControlName="bairro" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Cidade</mat-label>
+      <input matInput formControlName="cidade" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>UF</mat-label>
+      <input matInput formControlName="uf" maxlength="2" />
+    </mat-form-field>
+
+    <h3>Saúde e objetivos</h3>
+
+    <mat-form-field>
+      <mat-label>Contato de emergência</mat-label>
+      <input matInput formControlName="contatoEmergenciaNome" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Telefone de emergência</mat-label>
+      <input matInput formControlName="contatoEmergenciaTelefone" />
+    </mat-form-field>
+
+    <mat-form-field class="col-2">
+      <mat-label>Observações médicas</mat-label>
+      <textarea
+        matInput
+        formControlName="observacoesMedicas"
+        rows="3"
+        placeholder="Lesões, cirurgias, restrições, medicação em uso…"
+      ></textarea>
+    </mat-form-field>
+
+    <mat-form-field class="col-2">
+      <mat-label>Objetivos</mat-label>
+      <textarea matInput formControlName="objetivos" rows="2"></textarea>
+    </mat-form-field>
+
+    @if (!editando) {
+      <div class="acesso col-2">
+        <mat-slide-toggle formControlName="criarAcesso">
+          Criar acesso à área do aluno
+        </mat-slide-toggle>
+        <p>Geramos uma senha provisória e mostramos na tela para você repassar.</p>
+      </div>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button matButton mat-dialog-close>Cancelar</button>
+  <button matButton="filled" (click)="salvar()" [disabled]="salvando()">
+    @if (salvando()) {
+      <mat-spinner diameter="18" />
+      Salvando…
+    } @else {
+      {{ editando ? 'Salvar alterações' : 'Cadastrar aluno' }}
+    }
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,285 @@
+.acoes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.carregando {
+  display: grid;
+  place-items: center;
+  gap: 12px;
+  padding: 80px 20px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.kpis {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  margin-bottom: 20px;
+}
+
+.paineis {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  align-items: start;
+}
+
+.painel {
+  padding: 22px;
+
+  &--largo {
+    grid-column: 1 / -1;
+  }
+
+  &--destaque {
+    border-color: color-mix(in srgb, var(--alm-erro) 28%, transparent);
+  }
+
+  > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--alm-verde-escuro);
+    }
+
+    mat-icon {
+      font-size: 19px;
+      width: 19px;
+      height: 19px;
+      color: var(--alm-teal);
+    }
+  }
+
+  &__nota {
+    margin: 14px 0 0;
+    font-size: 0.8125rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+/* --------------------------- Lista de pendências ------------------------ */
+.lista-pendencias {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-block: 11px;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+  }
+
+  &__aluno {
+    flex: 1;
+    min-width: 0;
+
+    strong {
+      display: block;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    small {
+      display: block;
+      margin-top: 1px;
+      font-size: 0.75rem;
+      color: var(--mat-sys-on-surface-variant);
+    }
+
+    &:hover strong {
+      color: var(--alm-verde);
+    }
+  }
+
+  &__valor {
+    font-family: Outfit, sans-serif;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+}
+
+/* ------------------------------- Gráficos ------------------------------- */
+.grafico-barras {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  height: 160px;
+  padding-top: 8px;
+
+  .barra {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    height: 100%;
+    gap: 8px;
+
+    &__valor {
+      width: 100%;
+      max-width: 42px;
+      border-radius: 6px 6px 2px 2px;
+      background: linear-gradient(180deg, var(--alm-teal), var(--alm-verde));
+      min-height: 3px;
+      transition: height 0.4s cubic-bezier(0.2, 0, 0.2, 1);
+
+      &.zerada {
+        background: var(--mat-sys-surface-container-high);
+      }
+    }
+
+    &__rotulo {
+      font-size: 0.6875rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+}
+
+.sparkline {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 130px;
+
+  &__barra {
+    flex: 1;
+    min-width: 2px;
+    border-radius: 2px;
+    background: var(--alm-salvia);
+    transition: height 0.4s cubic-bezier(0.2, 0, 0.2, 1);
+
+    &:hover {
+      background: var(--alm-verde);
+    }
+  }
+}
+
+/* ------------------------------ Modalidades ----------------------------- */
+.lista-modalidades {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 16px;
+
+  li {
+    --cor: var(--alm-verde);
+  }
+
+  &__linha {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 7px;
+  }
+
+  &__nome {
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
+  &__numeros {
+    font-size: 0.8125rem;
+    color: var(--mat-sys-on-surface-variant);
+    white-space: nowrap;
+
+    strong {
+      color: var(--mat-sys-on-surface);
+    }
+  }
+
+  &__trilho {
+    height: 7px;
+    border-radius: 999px;
+    background: var(--mat-sys-surface-container-high);
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: var(--cor);
+      transition: width 0.5s cubic-bezier(0.2, 0, 0.2, 1);
+    }
+  }
+}
+
+/* ----------------------------- Chips renovação -------------------------- */
+.chips-renovacao {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.chip-renovacao {
+  display: block;
+  padding: 13px 15px;
+  border-radius: var(--alm-raio-sm);
+  background: var(--mat-sys-surface-container-low);
+  border: 1px solid var(--mat-sys-outline-variant);
+  transition:
+    border-color 0.18s ease,
+    transform 0.18s ease;
+
+  &:hover {
+    border-color: var(--alm-verde);
+    transform: translateY(-1px);
+  }
+
+  strong {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  span {
+    display: block;
+    margin-top: 3px;
+    font-size: 0.75rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  small {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 6px;
+    font-size: 0.6875rem;
+    color: var(--alm-teal);
+
+    mat-icon {
+      font-size: 13px;
+      width: 13px;
+      height: 13px;
+    }
+  }
+}

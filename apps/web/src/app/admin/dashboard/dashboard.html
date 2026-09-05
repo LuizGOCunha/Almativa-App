@@ -1,0 +1,194 @@
+<header class="alm-titulo-pagina">
+  <div>
+    <h1>Visão geral</h1>
+    <p>{{ agora() | date: "EEEE, d 'de' MMMM 'de' y" }}</p>
+  </div>
+  <div class="acoes">
+    <a matButton="outlined" routerLink="/admin/agenda">
+      <mat-icon>calendar_month</mat-icon>
+      Agenda de hoje
+    </a>
+    <a matButton="filled" routerLink="/admin/alunos">
+      <mat-icon>person_add</mat-icon>
+      Novo aluno
+    </a>
+  </div>
+</header>
+
+@if (!dados()) {
+  <div class="carregando">
+    <mat-spinner diameter="32" />
+    <span>Carregando indicadores…</span>
+  </div>
+} @else {
+  <section class="kpis">
+    <app-cartao-kpi
+      rotulo="Alunos ativos"
+      [valor]="dados()!.alunosAtivos"
+      icone="group"
+      [detalhe]="dados()!.matriculasAtivas + ' matrículas ativas'"
+    />
+    <app-cartao-kpi
+      rotulo="Recebido no mês"
+      [valor]="dados()!.receitaMesCentavos | moeda"
+      icone="payments"
+      cor="var(--alm-teal)"
+      [variacao]="variacaoReceita()"
+      [detalhe]="'Mês anterior: ' + (dados()!.receitaMesAnteriorCentavos | moeda)"
+    />
+    <app-cartao-kpi
+      rotulo="Inadimplência"
+      [valor]="dados()!.inadimplenciaCentavos | moeda"
+      icone="report"
+      cor="var(--alm-erro)"
+      [detalhe]="dados()!.mensalidadesVencidas + ' mensalidades vencidas'"
+    />
+    <app-cartao-kpi
+      rotulo="Aulas hoje"
+      [valor]="dados()!.aulasHoje"
+      icone="event"
+      cor="var(--alm-salvia)"
+      [detalhe]="dados()!.checkinsHoje + ' check-ins · ' + dados()!.presencasHoje + ' presenças'"
+    />
+    <app-cartao-kpi
+      rotulo="Taxa de presença"
+      [valor]="dados()!.taxaPresenca30d + '%'"
+      icone="fact_check"
+      [detalhe]="'Últimos 30 dias'"
+    />
+    <app-cartao-kpi
+      rotulo="Ocupação da semana"
+      [valor]="dados()!.ocupacaoMediaSemana + '%'"
+      icone="donut_large"
+      cor="var(--alm-teal)"
+      [detalhe]="'Média de vagas preenchidas'"
+    />
+  </section>
+
+  <section class="paineis">
+    <!-- Pendências financeiras -->
+    <article class="painel alm-cartao painel--destaque">
+      <header>
+        <h2><mat-icon>priority_high</mat-icon> Precisa de atenção</h2>
+        <a matButton routerLink="/admin/renovacoes">Ver todas</a>
+      </header>
+
+      @if (pendentes().length === 0) {
+        <app-estado-vazio
+          icone="task_alt"
+          titulo="Nada pendente por aqui"
+          descricao="Nenhuma mensalidade vencida ou vencendo hoje."
+        />
+      } @else {
+        <ul class="lista-pendencias">
+          @for (r of pendentes().slice(0, 6); track r.mensalidadeId) {
+            <li>
+              <a [routerLink]="['/admin/alunos', r.aluno.id]" class="lista-pendencias__aluno">
+                <strong>{{ r.aluno.nome }}</strong>
+                <small>{{ r.planoNome }}</small>
+              </a>
+              <span class="lista-pendencias__valor">{{ r.valorCentavos | moeda }}</span>
+              <span
+                class="alm-selo"
+                [class.alm-selo--erro]="r.situacao === 'PENDENTE'"
+                [class.alm-selo--alerta]="r.situacao === 'VENCE_HOJE'"
+              >
+                {{ r.situacao === 'VENCE_HOJE' ? 'vence hoje' : (r.vencimentoEm | quando) }}
+              </span>
+            </li>
+          }
+        </ul>
+      }
+    </article>
+
+    <!-- Receita -->
+    <article class="painel alm-cartao">
+      <header>
+        <h2><mat-icon>bar_chart</mat-icon> Receita — 6 meses</h2>
+      </header>
+
+      <div class="grafico-barras" role="img" aria-label="Receita dos últimos seis meses">
+        @for (b of barrasReceita(); track b.competencia) {
+          <div class="barra" [title]="b.valor">
+            <span class="barra__valor" [style.height.%]="b.altura" [class.zerada]="b.zerado"></span>
+            <span class="barra__rotulo">{{ b.rotulo }}</span>
+          </div>
+        }
+      </div>
+    </article>
+
+    <!-- Frequência -->
+    <article class="painel alm-cartao">
+      <header>
+        <h2><mat-icon>show_chart</mat-icon> Presenças — 30 dias</h2>
+      </header>
+
+      <div class="sparkline" role="img" aria-label="Presenças dos últimos trinta dias">
+        @for (b of barrasFrequencia(); track b.data) {
+          <span
+            class="sparkline__barra"
+            [style.height.%]="b.altura"
+            [title]="b.data + ': ' + b.presencas + ' presenças'"
+          ></span>
+        }
+      </div>
+      <p class="painel__nota">
+        {{ dados()!.presencasHoje }} presenças confirmadas hoje ·
+        {{ dados()!.checkinsHoje }} check-ins feitos
+      </p>
+    </article>
+
+    <!-- Modalidades -->
+    <article class="painel alm-cartao">
+      <header>
+        <h2><mat-icon>category</mat-icon> Alunos por modalidade</h2>
+      </header>
+
+      <ul class="lista-modalidades">
+        @for (m of totalPorModalidade(); track m.modalidade) {
+          <li [style.--cor]="m.cor">
+            <div class="lista-modalidades__linha">
+              <span class="lista-modalidades__nome">{{ m.modalidade }}</span>
+              <span class="lista-modalidades__numeros">
+                <strong>{{ m.alunos }}</strong> alunos · {{ m.aulas }} aulas/semana
+              </span>
+            </div>
+            <div class="lista-modalidades__trilho">
+              <span [style.width.%]="m.percentual"></span>
+            </div>
+          </li>
+        } @empty {
+          <app-estado-vazio icone="category" titulo="Nenhuma modalidade cadastrada." />
+        }
+      </ul>
+    </article>
+
+    <!-- Próximas renovações -->
+    <article class="painel alm-cartao painel--largo">
+      <header>
+        <h2><mat-icon>event_repeat</mat-icon> Renovações dos próximos 10 dias</h2>
+        <a matButton routerLink="/admin/renovacoes">Gerenciar</a>
+      </header>
+
+      @if (proximas().length === 0) {
+        <app-estado-vazio
+          icone="event_available"
+          titulo="Nenhuma renovação na janela"
+          descricao="Nada vence nos próximos 10 dias."
+        />
+      } @else {
+        <div class="chips-renovacao">
+          @for (r of proximas(); track r.mensalidadeId) {
+            <a [routerLink]="['/admin/alunos', r.aluno.id]" class="chip-renovacao">
+              <strong>{{ r.aluno.nome }}</strong>
+              <span>{{ r.valorCentavos | moeda }} · {{ r.vencimentoEm | quando }}</span>
+              @if (r.lembretesEnviados > 0) {
+                <small><mat-icon>mark_email_read</mat-icon> {{ r.lembretesEnviados }} lembrete(s)</small>
+              }
+            </a>
+          }
+        </div>
+      }
+    </article>
+  </section>
+}

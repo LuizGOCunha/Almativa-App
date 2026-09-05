@@ -1,0 +1,171 @@
+.capa {
+  padding-block: clamp(40px, 5vw, 72px) 28px;
+  background: color-mix(in srgb, var(--alm-teal) 9%, transparent);
+
+  h1 {
+    font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+    letter-spacing: -0.03em;
+    color: var(--alm-verde-escuro);
+  }
+
+  p {
+    margin: 14px 0 0;
+    max-width: 62ch;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.filtros {
+  margin-top: 24px;
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(var(--colunas, 6), minmax(190px, 1fr));
+  gap: 12px;
+  padding-block: 32px;
+  min-width: min-content;
+
+  &__coluna {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    &--hoje .grade__dia {
+      color: var(--alm-verde);
+    }
+  }
+
+  &__dia {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--mat-sys-outline-variant);
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__dia-longo {
+    display: none;
+  }
+
+  &__hoje {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--alm-verde);
+    color: white;
+    font-size: 0.625rem;
+    letter-spacing: 0.06em;
+  }
+
+  &__vazio {
+    margin: 0;
+    padding: 16px 0;
+    font-size: 0.8125rem;
+    color: var(--mat-sys-outline);
+    font-style: italic;
+  }
+}
+
+.aula {
+  --cor: var(--alm-verde);
+
+  position: relative;
+  padding: 14px 14px 14px 18px;
+  border-radius: var(--alm-raio-sm);
+  background: var(--mat-sys-surface);
+  border: 1px solid var(--mat-sys-outline-variant);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: var(--cor);
+  }
+
+  &__hora {
+    font-family: Outfit, sans-serif;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--alm-verde-escuro);
+    font-variant-numeric: tabular-nums;
+  }
+
+  h3 {
+    margin-top: 2px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
+  &__modalidade {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--cor) 13%, transparent);
+    color: var(--cor);
+    font-size: 0.6875rem;
+    font-weight: 600;
+  }
+
+  &__meta {
+    margin: 10px 0 0;
+    display: grid;
+    gap: 4px;
+
+    div {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    dt,
+    dd {
+      margin: 0;
+    }
+
+    mat-icon {
+      font-size: 15px;
+      width: 15px;
+      height: 15px;
+      color: var(--mat-sys-outline);
+      display: block;
+    }
+
+    dd {
+      font-size: 0.8125rem;
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+}
+
+.rodape-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  padding-bottom: 16px;
+}
+
+/* Em telas estreitas a grade vira lista por dia. */
+@media (max-width: 899px) {
+  .grade {
+    grid-template-columns: 1fr;
+    min-width: 0;
+  }
+
+  .grade__dia-curto {
+    display: none;
+  }
+
+  .grade__dia-longo {
+    display: inline;
+  }
+}

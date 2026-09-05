@@ -1,0 +1,87 @@
+mat-dialog-content {
+  min-width: min(620px, 88vw);
+}
+
+form {
+  display: grid;
+  gap: 2px;
+  padding-top: 6px;
+}
+
+.linha {
+  display: flex;
+  gap: 14px;
+}
+
+.cresce {
+  flex: 1;
+}
+
+.estreito {
+  width: 110px;
+  flex-shrink: 0;
+}
+
+.tipo {
+  width: 150px;
+  flex-shrink: 0;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-slide-toggle {
+  margin: 6px 0 4px;
+}
+
+h3 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 18px 0 12px;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.total {
+  font-family: Outfit, sans-serif;
+  font-size: 0.9375rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 700;
+  color: var(--alm-verde);
+  font-variant-numeric: tabular-nums;
+}
+
+.intervalos {
+  display: grid;
+  gap: 0;
+}
+
+.intervalo {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  button {
+    margin-top: 8px;
+    flex-shrink: 0;
+    --mat-icon-button-icon-color: var(--mat-sys-outline);
+  }
+}
+
+@media (max-width: 599px) {
+  .linha,
+  .intervalo {
+    flex-wrap: wrap;
+  }
+
+  .tipo,
+  .estreito {
+    width: 100%;
+  }
+}

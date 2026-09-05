@@ -1,0 +1,153 @@
+<header class="alm-titulo-pagina">
+  <div>
+    <h1>Renovações</h1>
+    <p>Quem vence em breve e quem já está em atraso — com o histórico de lembretes.</p>
+  </div>
+
+  <div class="acoes">
+    <button matButton="outlined" (click)="dispararLembretes(false)" [disabled]="enviandoLembretes()">
+      <mat-icon>notifications_active</mat-icon>
+      Rodar lembretes do dia
+    </button>
+    <button matButton="filled" (click)="dispararLembretes(true)" [disabled]="enviandoLembretes()">
+      <mat-icon>campaign</mat-icon>
+      Avisar todos agora
+    </button>
+  </div>
+</header>
+
+<section class="resumo">
+  <article class="resumo__cartao resumo__cartao--erro">
+    <span>Em atraso</span>
+    <strong>{{ totalPendente() | moeda }}</strong>
+    <small>{{ pendentes().length }} mensalidade(s)</small>
+  </article>
+  <article class="resumo__cartao resumo__cartao--alerta">
+    <span>Vence hoje</span>
+    <strong>{{ venceHoje().length }}</strong>
+    <small>cobranças com vencimento hoje</small>
+  </article>
+  <article class="resumo__cartao">
+    <span>A vencer na janela</span>
+    <strong>{{ totalAVencer() | moeda }}</strong>
+    <small>próximos {{ janela() }} dias</small>
+  </article>
+</section>
+
+<section class="filtros alm-cartao">
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Janela</mat-label>
+    <mat-select [value]="janela()" (valueChange)="aoMudarJanela($event)">
+      <mat-option [value]="5">próximos 5 dias</mat-option>
+      <mat-option [value]="10">próximos 10 dias</mat-option>
+      <mat-option [value]="15">próximos 15 dias</mat-option>
+      <mat-option [value]="30">próximos 30 dias</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Situação</mat-label>
+    <mat-select [value]="filtroSituacao()" (valueChange)="filtroSituacao.set($event)">
+      <mat-option value="">Todas</mat-option>
+      <mat-option value="PENDENTE">Em atraso</mat-option>
+      <mat-option value="VENCE_HOJE">Vence hoje</mat-option>
+      <mat-option value="PROXIMA">A vencer</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <span class="filtros__contagem">{{ listaFiltrada().length }} registro(s)</span>
+</section>
+
+@if (carregando()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+<section class="alm-cartao">
+  @if (listaFiltrada().length === 0 && !carregando()) {
+    <app-estado-vazio
+      icone="event_available"
+      titulo="Nada para cobrar"
+      descricao="Nenhuma mensalidade em aberto nessa janela. Bom sinal."
+    />
+  } @else {
+    <div class="alm-rolagem-x">
+      <table mat-table [dataSource]="listaFiltrada()" class="alm-tabela">
+        <ng-container matColumnDef="aluno">
+          <th mat-header-cell *matHeaderCellDef>Aluno</th>
+          <td mat-cell *matCellDef="let r">
+            <a [routerLink]="['/admin/alunos', r.aluno.id]" class="celula-aluno">
+              <span class="avatar">{{ r.aluno.nome | iniciais }}</span>
+              <span>
+                <strong>{{ r.aluno.nome }}</strong>
+                @if (r.aluno.telefone) {
+                  <small>{{ r.aluno.telefone }}</small>
+                }
+              </span>
+            </a>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="plano">
+          <th mat-header-cell *matHeaderCellDef>Plano</th>
+          <td mat-cell *matCellDef="let r"><span class="plano">{{ r.planoNome }}</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="competencia">
+          <th mat-header-cell *matHeaderCellDef>Competência</th>
+          <td mat-cell *matCellDef="let r">{{ r.competencia | competencia }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="vencimento">
+          <th mat-header-cell *matHeaderCellDef>Vencimento</th>
+          <td mat-cell *matCellDef="let r">
+            <div class="vencimento">
+              <span>{{ r.vencimentoEm | date: 'dd/MM/yyyy' }}</span>
+              <span class="alm-selo" [class]="classeSituacao(r.situacao)">
+                {{ rotuloSituacao(r) }}
+              </span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="valor">
+          <th mat-header-cell *matHeaderCellDef>Valor</th>
+          <td mat-cell *matCellDef="let r" class="numerico">{{ r.valorCentavos | moeda }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="lembretes">
+          <th mat-header-cell *matHeaderCellDef>Lembretes</th>
+          <td mat-cell *matCellDef="let r">
+            @if (r.lembretesEnviados > 0) {
+              <span
+                class="lembretes"
+                [matTooltip]="'Último em ' + (r.ultimoLembreteEm | date: 'dd/MM HH:mm')"
+              >
+                <mat-icon>mark_email_read</mat-icon>
+                {{ r.lembretesEnviados }}
+                <small>{{ r.ultimoLembreteEm | quando }}</small>
+              </span>
+            } @else {
+              <span class="sem-lembrete">nenhum</span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acoes">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let r" class="coluna-acoes">
+            <button matButton="filled" (click)="receber(r)">
+              <mat-icon>payments</mat-icon> Receber
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+        <tr
+          mat-row
+          *matRowDef="let linha; columns: colunas"
+          [class.linha-atrasada]="linha.situacao === 'PENDENTE'"
+        ></tr>
+      </table>
+    </div>
+  }
+</section>

@@ -1,0 +1,91 @@
+<div class="casca">
+  <header class="topo">
+    <div class="alm-container topo__linha">
+      <a routerLink="/" class="topo__marca" aria-label="Almativa — página inicial">
+        <app-logo [tamanho]="34" />
+        <span class="topo__nome">ALMATIVA</span>
+      </a>
+
+      <nav class="topo__nav" aria-label="Navegação principal">
+        @for (item of itens; track item.rota) {
+          <a
+            [routerLink]="item.rota"
+            routerLinkActive="ativo"
+            [routerLinkActiveOptions]="{ exact: true }"
+            >{{ item.rotulo }}</a
+          >
+        }
+      </nav>
+
+      <div class="topo__acoes">
+        @if (autenticado()) {
+          <a matButton="filled" [routerLink]="rotaDaArea()">
+            <mat-icon>dashboard</mat-icon>
+            Minha área
+          </a>
+        } @else {
+          <a matButton routerLink="/entrar" class="topo__entrar">Entrar</a>
+          <a matButton="filled" routerLink="/contato">Agendar aula</a>
+        }
+        <button
+          matIconButton
+          class="topo__menu-botao"
+          (click)="alternarMenu()"
+          [attr.aria-expanded]="menuAberto()"
+          aria-label="Abrir menu"
+        >
+          <mat-icon>{{ menuAberto() ? 'close' : 'menu' }}</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    @if (menuAberto()) {
+      <nav class="menu-mobile" aria-label="Navegação principal (mobile)">
+        @for (item of itens; track item.rota) {
+          <a [routerLink]="item.rota" (click)="fecharMenu()">{{ item.rotulo }}</a>
+        }
+        @if (autenticado()) {
+          <a [routerLink]="rotaDaArea()" (click)="fecharMenu()">Minha área</a>
+        } @else {
+          <a routerLink="/entrar" (click)="fecharMenu()">Entrar</a>
+        }
+      </nav>
+    }
+  </header>
+
+  <main class="conteudo">
+    <router-outlet />
+  </main>
+
+  <footer class="rodape">
+    <div class="alm-container rodape__grade">
+      <div class="rodape__marca">
+        <app-logo [tamanho]="40" variante="clara" />
+        <p>
+          Movimento com propósito. Pilates, Jiu-Jitsu e Fisioterapia sob o mesmo teto — e o mesmo
+          cuidado.
+        </p>
+      </div>
+
+      <nav class="rodape__links" aria-label="Links do rodapé">
+        <h3>Navegue</h3>
+        @for (item of itens; track item.rota) {
+          <a [routerLink]="item.rota">{{ item.rotulo }}</a>
+        }
+        <a routerLink="/entrar">Área do aluno</a>
+      </nav>
+
+      <div class="rodape__contato">
+        <h3>Fale com a gente</h3>
+        <a href="tel:+551130001020"><mat-icon>call</mat-icon> (11) 3000-1020</a>
+        <a href="mailto:contato@almativa.com.br"><mat-icon>mail</mat-icon> contato&#64;almativa.com.br</a>
+        <span><mat-icon>location_on</mat-icon> Vila Madalena, São Paulo/SP</span>
+      </div>
+    </div>
+
+    <div class="alm-container rodape__base">
+      <small>© {{ anoAtual }} Almativa. Todos os direitos reservados.</small>
+      <a routerLink="/tv/parear" class="rodape__tv">Parear tela da sala</a>
+    </div>
+  </footer>
+</div>

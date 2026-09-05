@@ -1,0 +1,14 @@
+# Mantem LF no repositorio e na copia de trabalho, em qualquer sistema.
+# Sem isto o Windows converte para CRLF no checkout e o diff fica ruidoso.
+* text=auto eol=lf
+
+# Binarios nao passam por conversao.
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.pdf binary
+
+# Lockfile nao suja o diff das revisoes.
+package-lock.json linguist-generated=true -diff

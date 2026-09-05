@@ -1,0 +1,128 @@
+.acoes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.totais {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+
+  &__nota {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.total {
+  padding: 14px 20px;
+  border-radius: var(--alm-raio);
+  background: var(--mat-sys-surface);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-left-width: 4px;
+  min-width: 160px;
+
+  &--sucesso {
+    border-left-color: var(--alm-sucesso);
+  }
+
+  &--erro {
+    border-left-color: var(--alm-erro);
+  }
+
+  span {
+    display: block;
+    font-size: 0.6875rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  strong {
+    display: block;
+    margin-top: 4px;
+    font-family: Outfit, sans-serif;
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--alm-verde-escuro);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.filtros {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+
+  &__busca {
+    flex: 1;
+    min-width: 240px;
+  }
+
+  mat-form-field:not(.filtros__busca) {
+    min-width: 180px;
+  }
+}
+
+table {
+  width: 100%;
+}
+
+.link-aluno {
+  display: block;
+  padding-block: 6px;
+
+  strong {
+    display: block;
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
+  small {
+    display: block;
+    margin-top: 1px;
+    font-size: 0.75rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &:hover strong {
+    color: var(--alm-verde);
+  }
+}
+
+.atraso,
+.pago {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.6875rem;
+}
+
+.atraso {
+  color: var(--alm-erro);
+}
+
+.pago {
+  color: var(--mat-sys-outline);
+}
+
+.numerico {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.coluna-acoes {
+  text-align: end;
+  white-space: nowrap;
+}
+
+.linha-vencida {
+  background: color-mix(in srgb, var(--alm-erro) 3.5%, transparent);
+}

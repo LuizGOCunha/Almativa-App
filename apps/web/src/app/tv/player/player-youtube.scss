@@ -1,0 +1,179 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.player {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 20px;
+  background: color-mix(in srgb, white 6%, transparent);
+  border: 1px solid color-mix(in srgb, white 12%, transparent);
+  color: white;
+
+  &__palco {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #000;
+    aspect-ratio: 16 / 9;
+
+    &.oculto {
+      aspect-ratio: auto;
+      height: 96px;
+      background: color-mix(in srgb, var(--alm-teal) 20%, #08130e);
+    }
+  }
+
+  &__iframe {
+    width: 100%;
+    height: 100%;
+
+    :host-context(.player--audio) & {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
+  &--audio &__iframe {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &__capa {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 6px;
+    color: color-mix(in srgb, white 70%, transparent);
+
+    mat-icon {
+      font-size: 34px;
+      width: 34px;
+      height: 34px;
+      color: #7fbebb;
+    }
+
+    span {
+      font-size: 0.6875rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+  }
+
+  &__info {
+    display: grid;
+    gap: 2px;
+  }
+
+  &__nome {
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, white 50%, transparent);
+  }
+
+  &__faixa {
+    font-size: 1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__contagem {
+    font-size: 0.75rem;
+    color: color-mix(in srgb, white 55%, transparent);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__erro {
+    font-size: 0.75rem;
+    color: #ffb4ab;
+  }
+
+  &__controles {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    --mat-icon-button-icon-color: color-mix(in srgb, white 78%, transparent);
+    --mat-icon-button-disabled-icon-color: color-mix(in srgb, white 28%, transparent);
+  }
+
+  &__play {
+    --mat-fab-container-color: #7fbebb;
+    --mat-fab-foreground-color: #0b1f16;
+    transform: scale(0.85);
+  }
+
+  &__volume {
+    flex: 1;
+    min-width: 0;
+    --mdc-slider-handle-color: #7fbebb;
+    --mdc-slider-active-track-color: #7fbebb;
+    --mdc-slider-inactive-track-color: color-mix(in srgb, white 25%, transparent);
+  }
+
+  &__lista {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 2px;
+    max-height: 168px;
+    overflow-y: auto;
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 8px 10px;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: color-mix(in srgb, white 72%, transparent);
+      font: inherit;
+      font-size: 0.8125rem;
+      text-align: start;
+      cursor: pointer;
+
+      &:hover {
+        background: color-mix(in srgb, white 8%, transparent);
+        color: white;
+      }
+
+      &.ativa {
+        background: color-mix(in srgb, #7fbebb 22%, transparent);
+        color: white;
+      }
+
+      mat-icon {
+        font-size: 17px;
+        width: 17px;
+        height: 17px;
+        flex-shrink: 0;
+      }
+
+      span {
+        flex: 1;
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}

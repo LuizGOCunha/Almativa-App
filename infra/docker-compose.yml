@@ -1,0 +1,64 @@
+name: almativa
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: almativa-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: almativa
+      POSTGRES_PASSWORD: almativa
+      POSTGRES_DB: almativa
+      TZ: America/Sao_Paulo
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U almativa -d almativa"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mongo:
+    image: mongo:8
+    container_name: almativa-mongo
+    restart: unless-stopped
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    environment:
+      TZ: America/Sao_Paulo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # Inicializa o replica set de no unico. Necessario para transacoes e change streams.
+  mongo-init:
+    image: mongo:8
+    container_name: almativa-mongo-init
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: "no"
+    entrypoint:
+      - bash
+      - -c
+      - |
+        mongosh --host mongo:27017 --quiet --eval '
+          try {
+            rs.status();
+            print("replica set ja iniciado");
+          } catch (e) {
+            rs.initiate({ _id: "rs0", members: [{ _id: 0, host: "localhost:27017" }] });
+            print("replica set iniciado");
+          }
+        '
+
+volumes:
+  postgres-data:
+  mongo-data:

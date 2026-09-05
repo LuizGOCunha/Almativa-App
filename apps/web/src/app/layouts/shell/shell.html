@@ -1,0 +1,84 @@
+<div class="casca" [class.casca--gaveta-aberta]="gavetaAberta()">
+  <aside class="barra" [attr.inert]="null">
+    <a routerLink="/" class="barra__marca">
+      <app-logo [tamanho]="32" />
+      <span>
+        <strong>ALMATIVA</strong>
+        <small>{{ areaRotulo() }}</small>
+      </span>
+    </a>
+
+    <nav class="barra__nav" aria-label="Navegação da área">
+      @for (item of itens(); track item.rota) {
+        <a
+          [routerLink]="item.rota"
+          routerLinkActive="ativo"
+          [routerLinkActiveOptions]="{ exact: item.exato ?? false }"
+          (click)="fecharGaveta()"
+        >
+          <mat-icon>{{ item.icone }}</mat-icon>
+          <span>{{ item.rotulo }}</span>
+          @if (contadorDe(item.contador) > 0) {
+            <span class="barra__contador">{{ contadorDe(item.contador) }}</span>
+          }
+        </a>
+      }
+    </nav>
+
+    <div class="barra__rodape">
+      <a routerLink="/" class="barra__site">
+        <mat-icon>public</mat-icon>
+        <span>Ver o site</span>
+      </a>
+    </div>
+  </aside>
+
+  <button
+    type="button"
+    class="cortina"
+    aria-label="Fechar menu"
+    (click)="fecharGaveta()"
+  ></button>
+
+  <div class="area">
+    <header class="topo">
+      <button
+        matIconButton
+        class="topo__gaveta"
+        (click)="alternarGaveta()"
+        [attr.aria-expanded]="gavetaAberta()"
+        aria-label="Abrir menu"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <span class="topo__espaco"></span>
+
+      <button matButton class="topo__perfil" [matMenuTriggerFor]="menuPerfil">
+        <span class="avatar" aria-hidden="true">{{ usuario()?.nome | iniciais }}</span>
+        <span class="topo__nome">{{ primeiroNome() }}</span>
+        <mat-icon iconPositionEnd>expand_more</mat-icon>
+      </button>
+
+      <mat-menu #menuPerfil="matMenu" xPosition="before">
+        <div class="menu-cabecalho">
+          <strong>{{ usuario()?.nome }}</strong>
+          <small>{{ usuario()?.email }}</small>
+        </div>
+        <mat-divider />
+        <button mat-menu-item (click)="irParaSite()">
+          <mat-icon>public</mat-icon>
+          <span>Ir para o site</span>
+        </button>
+        <button mat-menu-item (click)="sair()">
+          <mat-icon>logout</mat-icon>
+          <span>Sair</span>
+        </button>
+      </mat-menu>
+    </header>
+
+    <main class="conteudo">
+      <router-outlet />
+    </main>
+  </div>
+</div>

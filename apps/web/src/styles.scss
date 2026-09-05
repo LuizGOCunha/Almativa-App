@@ -1,0 +1,254 @@
+@use '@angular/material' as mat;
+@use './styles/paleta' as paleta;
+
+// ---------------------------------------------------------------------------
+// Tema Material 3 da Almativa
+// ---------------------------------------------------------------------------
+html {
+  color-scheme: light;
+
+  @include mat.theme(
+    (
+      color: (
+        primary: paleta.$almativa-primary,
+        tertiary: paleta.$almativa-tertiary,
+        theme-type: light,
+      ),
+      typography: (
+        plain-family: (Inter, 'Segoe UI', system-ui, sans-serif),
+        brand-family: (Outfit, Inter, system-ui, sans-serif),
+        bold-weight: 600,
+        medium-weight: 500,
+        regular-weight: 400,
+      ),
+      density: 0,
+    )
+  );
+
+  // Tokens da marca usados fora do Material.
+  --alm-creme: #f7f4ec;
+  --alm-creme-forte: #efe9db;
+  --alm-verde: #1e4d3b;
+  --alm-verde-escuro: #133226;
+  --alm-salvia: #88a86b;
+  --alm-teal: #5c9a98;
+
+  --alm-raio: 14px;
+  --alm-raio-sm: 10px;
+  --alm-sombra: 0 1px 2px rgb(19 50 38 / 6%), 0 8px 24px rgb(19 50 38 / 6%);
+  --alm-sombra-forte: 0 2px 4px rgb(19 50 38 / 8%), 0 16px 40px rgb(19 50 38 / 10%);
+  --alm-borda: 1px solid var(--mat-sys-outline-variant);
+  --alm-max-largura: 1240px;
+
+  --alm-sucesso: #2f7d4f;
+  --alm-sucesso-fundo: #e4f5e9;
+  --alm-alerta: #a86b1e;
+  --alm-alerta-fundo: #fdf0dd;
+  --alm-erro: #ba1a1a;
+  --alm-erro-fundo: #ffe6e3;
+  --alm-info: #2a6866;
+  --alm-info-fundo: #e0f3f2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--alm-creme);
+  color: var(--mat-sys-on-surface);
+  font-family: Inter, 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: Outfit, Inter, system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+// Scrollbar discreta, no tom da marca.
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--alm-verde) 25%, transparent) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--alm-verde) 22%, transparent);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--alm-verde) 38%, transparent);
+  background-clip: content-box;
+}
+
+// ---------------------------------------------------------------------------
+// Utilitarios compartilhados
+// ---------------------------------------------------------------------------
+.alm-container {
+  width: 100%;
+  max-width: var(--alm-max-largura);
+  margin-inline: auto;
+  padding-inline: 24px;
+
+  @media (max-width: 599px) {
+    padding-inline: 16px;
+  }
+}
+
+.alm-cartao {
+  background: var(--mat-sys-surface);
+  border: var(--alm-borda);
+  border-radius: var(--alm-raio);
+  box-shadow: var(--alm-sombra);
+}
+
+.alm-titulo-pagina {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+    line-height: 1.2;
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.9375rem;
+  }
+}
+
+.alm-grade-cards {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+// Selo de status reutilizavel (mensalidade, aula, checkin...).
+.alm-selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  line-height: 1.4;
+
+  &--sucesso {
+    background: var(--alm-sucesso-fundo);
+    color: var(--alm-sucesso);
+  }
+
+  &--alerta {
+    background: var(--alm-alerta-fundo);
+    color: var(--alm-alerta);
+  }
+
+  &--erro {
+    background: var(--alm-erro-fundo);
+    color: var(--alm-erro);
+  }
+
+  &--info {
+    background: var(--alm-info-fundo);
+    color: var(--alm-info);
+  }
+
+  &--neutro {
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.alm-vazio {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 40px;
+    opacity: 0.4;
+  }
+
+  strong {
+    color: var(--mat-sys-on-surface);
+    font-weight: 600;
+  }
+}
+
+// Tabelas: cabecalho discreto e linhas com respiro.
+.alm-tabela {
+  width: 100%;
+  background: transparent;
+
+  th.mat-mdc-header-cell {
+    background: var(--mat-sys-surface-container-low);
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  td.mat-mdc-cell {
+    border-bottom-color: var(--mat-sys-outline-variant);
+  }
+}
+
+.alm-rolagem-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.alm-so-leitor-tela {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media print {
+  .alm-sem-impressao {
+    display: none !important;
+  }
+}

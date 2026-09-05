@@ -1,0 +1,120 @@
+<header class="alm-titulo-pagina">
+  <div>
+    <h1>Agenda e chamada</h1>
+    <p>
+      {{ inicioSemana() | date: 'dd/MM' }} a {{ fimSemana() | date: 'dd/MM/yyyy' }} ·
+      {{ resumoSemana().aulas }} aulas · {{ resumoSemana().ocupacao }}% de ocupação
+    </p>
+  </div>
+  <button matButton="outlined" (click)="gerarAulas()">
+    <mat-icon>auto_awesome</mat-icon> Gerar próximas 4 semanas
+  </button>
+</header>
+
+<section class="barra alm-cartao">
+  <div class="navegacao">
+    <button matIconButton (click)="navegar(-1)" aria-label="Semana anterior">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button matButton (click)="irParaHoje()">Hoje</button>
+    <button matIconButton (click)="navegar(1)" aria-label="Próxima semana">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label>Modalidade</mat-label>
+    <mat-select [value]="modalidadeId()" (valueChange)="aoFiltrarModalidade($event)">
+      <mat-option value="">Todas</mat-option>
+      @for (m of modalidades(); track m.id) {
+        <mat-option [value]="m.id">{{ m.nome }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <div class="metricas">
+    <span><strong>{{ resumoSemana().checkins }}</strong> check-ins</span>
+    <span><strong>{{ resumoSemana().presencas }}</strong> presenças</span>
+  </div>
+</section>
+
+@if (carregando()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+<div class="alm-rolagem-x">
+  <div class="semana">
+    @for (dia of dias(); track dia.iso) {
+      <section class="dia" [class.dia--hoje]="dia.ehHoje">
+        <header>
+          <span class="dia__nome">{{ dia.rotulo }}</span>
+          <span class="dia__numero">{{ dia.data | date: 'dd/MM' }}</span>
+          @if (dia.ehHoje) {
+            <span class="dia__hoje">hoje</span>
+          }
+        </header>
+
+        @for (aula of dia.aulas; track aula.id) {
+          <article
+            class="aula"
+            [style.--cor]="aula.turma.modalidade.cor"
+            [class.aula--cancelada]="aula.status === 'CANCELADA'"
+          >
+            <div class="aula__topo">
+              <span class="aula__hora">{{ aula.inicioEm | date: 'HH:mm' }}</span>
+              <button matIconButton [matMenuTriggerFor]="menu" aria-label="Ações da aula">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="abrirChamada(aula)">
+                  <mat-icon>fact_check</mat-icon><span>Fazer chamada</span>
+                </button>
+                @if (aula.status !== 'CANCELADA') {
+                  <button mat-menu-item (click)="cancelarAula(aula)">
+                    <mat-icon>event_busy</mat-icon><span>Cancelar aula</span>
+                  </button>
+                }
+              </mat-menu>
+            </div>
+
+            <h3>{{ aula.turma.nome }}</h3>
+            @if (aula.instrutor) {
+              <span class="aula__instrutor">{{ aula.instrutor.nome }}</span>
+            }
+
+            <div class="aula__lotacao" [matTooltip]="aula.checkins + ' de ' + aula.capacidade + ' vagas'">
+              <div class="aula__trilho">
+                <span [style.width.%]="lotacao(aula)" [class.cheio]="lotacao(aula) >= 100"></span>
+              </div>
+              <span class="aula__numeros">{{ aula.checkins }}/{{ aula.capacidade }}</span>
+            </div>
+
+            <div class="aula__rodape">
+              @if (aula.status !== 'AGENDADA') {
+                <app-selo [rotulo]="rotulos[aula.status]" [comIcone]="false" />
+              }
+              @if (aula.presentes > 0) {
+                <span class="aula__presentes">
+                  <mat-icon>check_circle</mat-icon> {{ aula.presentes }}
+                </span>
+              }
+              <button matButton class="aula__chamada" (click)="abrirChamada(aula)">Chamada</button>
+            </div>
+          </article>
+        } @empty {
+          <p class="dia__vazio">sem aulas</p>
+        }
+      </section>
+    }
+  </div>
+</div>
+
+@if (resumoSemana().aulas === 0 && !carregando()) {
+  <app-estado-vazio
+    icone="event_busy"
+    titulo="Nenhuma aula nesta semana"
+    descricao="Gere as ocorrências a partir da grade de turmas."
+  >
+    <button matButton="filled" (click)="gerarAulas()">Gerar aulas</button>
+  </app-estado-vazio>
+}

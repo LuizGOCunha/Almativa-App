@@ -1,0 +1,190 @@
+<div class="sala">
+  <header class="sala__topo">
+    <div class="sala__marca">
+      <span class="sala__logo">ALMATIVA</span>
+      @if (aula(); as a) {
+        <span class="sala__local">{{ a.turma.sala ?? a.turma.modalidade.nome }}</span>
+      }
+    </div>
+
+    <div class="sala__relogio">
+      <strong>{{ agora() | date: 'HH:mm' }}</strong>
+      <span>{{ agora() | date: "EEEE, d 'de' MMMM" }}</span>
+    </div>
+
+    <div class="sala__acoes">
+      <button matIconButton (click)="carregar()" aria-label="Atualizar" matTooltip="Atualizar">
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <button
+        matIconButton
+        (click)="alternarTelaCheia()"
+        [attr.aria-label]="telaCheia() ? 'Sair da tela cheia' : 'Tela cheia'"
+      >
+        <mat-icon>{{ telaCheia() ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+      </button>
+      <button matIconButton (click)="sair()" aria-label="Desconectar" matTooltip="Desconectar">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+  </header>
+
+  <main class="sala__corpo">
+    <!-- ------------------------- Coluna esquerda ------------------------- -->
+    <section class="coluna coluna--principal">
+      @if (aula(); as a) {
+        <article class="aula-atual">
+          <span class="aula-atual__etiqueta" [style.--cor]="a.turma.modalidade.cor">
+            {{ a.turma.modalidade.nome }}
+          </span>
+          <h1>{{ a.turma.nome }}</h1>
+          <p class="aula-atual__horario">
+            {{ a.inicioEm | date: 'HH:mm' }} – {{ a.fimEm | date: 'HH:mm' }}
+            @if (a.instrutor) {
+              · {{ a.instrutor.nome }}
+            }
+          </p>
+          <div class="aula-atual__numeros">
+            <span><strong>{{ totalPresentes() }}</strong> presentes</span>
+            <span><strong>{{ a.checkins }}</strong> check-ins</span>
+            <span><strong>{{ a.capacidade }}</strong> vagas</span>
+          </div>
+        </article>
+      } @else if (proxima(); as p) {
+        <article class="aula-atual aula-atual--vazia">
+          <span class="aula-atual__etiqueta">Próxima aula</span>
+          <h1>{{ p.turma.nome }}</h1>
+          <p class="aula-atual__horario">
+            {{ p.inicioEm | date: "EEEE 'às' HH:mm" }}
+            @if (p.instrutor) {
+              · {{ p.instrutor.nome }}
+            }
+          </p>
+        </article>
+      } @else {
+        <article class="aula-atual aula-atual--vazia">
+          <h1>Sem aula agora</h1>
+          <p class="aula-atual__horario">Aproveite para preparar a sala.</p>
+        </article>
+      }
+
+      @if (timerAtivo(); as timer) {
+        <div class="seletor">
+          <mat-form-field subscriptSizing="dynamic" class="seletor__campo">
+            <mat-label>Timer</mat-label>
+            <mat-select
+              [value]="timer.id"
+              (valueChange)="timerSelecionadoId.set($event)"
+            >
+              @for (t of timers(); track t.id) {
+                <mat-option [value]="t.id">{{ t.nome }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <app-cronometro [preset]="timer" />
+      } @else {
+        <div class="vazio-escuro">
+          <mat-icon>timer_off</mat-icon>
+          <strong>Nenhum timer configurado</strong>
+          <span>Cadastre presets em Administração → Tela da sala.</span>
+        </div>
+      }
+    </section>
+
+    <!-- -------------------------- Coluna direita ------------------------- -->
+    <aside class="coluna coluna--lateral">
+      <section class="bloco">
+        <header class="bloco__topo">
+          <h2>Chamada</h2>
+          <span class="bloco__contador">{{ totalPresentes() }}/{{ listaChamada().length }}</span>
+        </header>
+
+        @if (listaChamada().length === 0) {
+          <div class="vazio-escuro vazio-escuro--compacto">
+            <mat-icon>groups</mat-icon>
+            <strong>Ninguém fez check-in</strong>
+            <span>Os alunos reservam a vaga pelo app.</span>
+          </div>
+        } @else {
+          <p class="bloco__dica">Toque no nome para confirmar a presença.</p>
+          <ul class="chamada">
+            @for (linha of listaChamada(); track linha.alunoId) {
+              <li>
+                <button
+                  type="button"
+                  [class.presente]="linha.presente"
+                  [class.espera]="linha.listaEspera"
+                  (click)="confirmarPresenca(linha.alunoId, linha.presente)"
+                >
+                  <span class="chamada__avatar">{{ linha.alunoNome | iniciais }}</span>
+                  <span class="chamada__nome">
+                    {{ linha.alunoNome }}
+                    @if (linha.listaEspera) {
+                      <small>lista de espera</small>
+                    }
+                  </span>
+                  <mat-icon>{{ linha.presente ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <section class="bloco">
+        <header class="bloco__topo">
+          <h2>Trilha</h2>
+          <button
+            matIconButton
+            (click)="mostrarPlayer.set(!mostrarPlayer())"
+            [attr.aria-label]="mostrarPlayer() ? 'Ocultar player' : 'Mostrar player'"
+          >
+            <mat-icon>{{ mostrarPlayer() ? 'expand_less' : 'expand_more' }}</mat-icon>
+          </button>
+        </header>
+
+        @if (mostrarPlayer()) {
+          @if (playlistAtiva(); as playlist) {
+            @if (playlists().length > 1) {
+              <mat-form-field subscriptSizing="dynamic" class="seletor__campo">
+                <mat-label>Playlist</mat-label>
+                <mat-select
+                  [value]="playlist.id"
+                  (valueChange)="playlistSelecionadaId.set($event)"
+                >
+                  @for (p of playlists(); track p.id) {
+                    <mat-option [value]="p.id">{{ p.nome }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            }
+
+            <app-player-youtube [playlist]="playlist" />
+          } @else {
+            <div class="vazio-escuro vazio-escuro--compacto">
+              <mat-icon>music_off</mat-icon>
+              <strong>Nenhuma playlist</strong>
+              <span>Cadastre em Administração → Tela da sala.</span>
+            </div>
+          }
+        }
+      </section>
+
+      @if (painel()?.avisos?.length) {
+        <section class="bloco">
+          <header class="bloco__topo"><h2>Avisos</h2></header>
+          <ul class="avisos">
+            @for (aviso of painel()!.avisos; track aviso.id) {
+              <li>
+                <strong>{{ aviso.titulo }}</strong>
+                <span>{{ aviso.mensagem }}</span>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    </aside>
+  </main>
+</div>

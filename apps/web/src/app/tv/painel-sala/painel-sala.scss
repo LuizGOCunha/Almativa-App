@@ -1,0 +1,361 @@
+:host {
+  display: block;
+}
+
+.sala {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: clamp(16px, 2vw, 28px);
+  gap: 20px;
+  color: white;
+  background:
+    radial-gradient(
+      ellipse 70% 60% at 15% 0%,
+      color-mix(in srgb, var(--alm-teal) 26%, transparent),
+      transparent 62%
+    ),
+    radial-gradient(
+      ellipse 60% 50% at 90% 100%,
+      color-mix(in srgb, var(--alm-salvia) 16%, transparent),
+      transparent 60%
+    ),
+    #0b1f16;
+
+  /* Fora do tema claro do resto do app: a sala é escura por natureza. */
+  --mat-icon-button-icon-color: color-mix(in srgb, white 72%, transparent);
+
+  &__topo {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  &__marca {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  &__logo {
+    font-family: Outfit, sans-serif;
+    font-weight: 700;
+    font-size: 1.125rem;
+    letter-spacing: 0.18em;
+  }
+
+  &__local {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, white 50%, transparent);
+  }
+
+  &__relogio {
+    margin-inline: auto;
+    text-align: center;
+
+    strong {
+      display: block;
+      font-family: Outfit, sans-serif;
+      font-size: clamp(1.75rem, 1.2rem + 2vw, 2.75rem);
+      font-weight: 700;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    span {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.8125rem;
+      color: color-mix(in srgb, white 55%, transparent);
+
+      &::first-letter {
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  &__acoes {
+    display: flex;
+    gap: 2px;
+  }
+
+  &__corpo {
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+
+    @media (max-width: 1099px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.coluna {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  min-width: 0;
+}
+
+/* ------------------------------ Aula atual ------------------------------ */
+.aula-atual {
+  padding: clamp(18px, 2vw, 26px);
+  border-radius: 20px;
+  background: color-mix(in srgb, white 6%, transparent);
+  border: 1px solid color-mix(in srgb, white 12%, transparent);
+
+  &__etiqueta {
+    --cor: var(--alm-teal);
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--cor) 30%, transparent);
+    color: white;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin-top: 12px;
+    font-size: clamp(1.5rem, 1.1rem + 2vw, 2.5rem);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  &__horario {
+    margin: 8px 0 0;
+    font-size: 1rem;
+    color: color-mix(in srgb, white 65%, transparent);
+
+    &::first-letter {
+      text-transform: uppercase;
+    }
+  }
+
+  &__numeros {
+    display: flex;
+    gap: 26px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid color-mix(in srgb, white 12%, transparent);
+    font-size: 0.8125rem;
+    color: color-mix(in srgb, white 58%, transparent);
+
+    strong {
+      font-family: Outfit, sans-serif;
+      font-size: 1.375rem;
+      color: white;
+      margin-inline-end: 4px;
+    }
+  }
+
+  &--vazia {
+    text-align: center;
+
+    h1 {
+      color: color-mix(in srgb, white 88%, transparent);
+    }
+  }
+}
+
+.seletor__campo {
+  width: 100%;
+
+  --mat-form-field-container-text-color: white;
+  --mat-form-field-label-text-color: color-mix(in srgb, white 62%, transparent);
+  --mdc-outlined-text-field-outline-color: color-mix(in srgb, white 24%, transparent);
+  --mdc-outlined-text-field-hover-outline-color: color-mix(in srgb, white 45%, transparent);
+  --mdc-outlined-text-field-focus-outline-color: #7fbebb;
+  --mdc-outlined-text-field-input-text-color: white;
+  --mat-select-enabled-trigger-text-color: white;
+  --mat-select-enabled-arrow-color: color-mix(in srgb, white 62%, transparent);
+}
+
+/* --------------------------------- Blocos -------------------------------- */
+.bloco {
+  min-width: 0;
+  padding: 18px;
+  border-radius: 20px;
+  background: color-mix(in srgb, white 6%, transparent);
+  border: 1px solid color-mix(in srgb, white 12%, transparent);
+
+  &__topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+
+    h2 {
+      font-size: 0.6875rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, white 55%, transparent);
+    }
+  }
+
+  &__contador {
+    font-family: Outfit, sans-serif;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: #7fd8a4;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__dica {
+    margin: 0 0 10px;
+    font-size: 0.75rem;
+    color: color-mix(in srgb, white 45%, transparent);
+  }
+}
+
+/* -------------------------------- Chamada -------------------------------- */
+.chamada {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+  max-height: min(46vh, 420px);
+  overflow-y: auto;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: color-mix(in srgb, white 5%, transparent);
+    color: white;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    transition:
+      background 0.16s ease,
+      border-color 0.16s ease;
+
+    &:hover {
+      background: color-mix(in srgb, white 10%, transparent);
+    }
+
+    &.presente {
+      background: color-mix(in srgb, #7fd8a4 18%, transparent);
+      border-color: color-mix(in srgb, #7fd8a4 40%, transparent);
+      cursor: default;
+
+      mat-icon {
+        color: #7fd8a4;
+      }
+    }
+
+    &.espera {
+      opacity: 0.72;
+    }
+
+    mat-icon {
+      flex-shrink: 0;
+      color: color-mix(in srgb, white 35%, transparent);
+    }
+  }
+
+  &__avatar {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--alm-teal) 32%, transparent);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  &__nome {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    small {
+      display: block;
+      margin-top: 1px;
+      font-size: 0.6875rem;
+      font-weight: 400;
+      color: #f0c48a;
+    }
+  }
+}
+
+/* --------------------------------- Avisos -------------------------------- */
+.avisos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+
+  li {
+    padding: 11px 13px;
+    border-radius: 12px;
+    background: color-mix(in srgb, #f0c48a 12%, transparent);
+    border-left: 3px solid #f0c48a;
+
+    strong {
+      display: block;
+      font-size: 0.875rem;
+    }
+
+    span {
+      display: block;
+      margin-top: 2px;
+      font-size: 0.8125rem;
+      color: color-mix(in srgb, white 70%, transparent);
+    }
+  }
+}
+
+/* ------------------------------ Estado vazio ----------------------------- */
+.vazio-escuro {
+  display: grid;
+  place-items: center;
+  gap: 7px;
+  padding: 36px 20px;
+  text-align: center;
+  border-radius: 20px;
+  background: color-mix(in srgb, white 4%, transparent);
+  border: 1px dashed color-mix(in srgb, white 16%, transparent);
+
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    color: color-mix(in srgb, white 34%, transparent);
+  }
+
+  strong {
+    font-size: 0.9375rem;
+  }
+
+  span {
+    font-size: 0.8125rem;
+    color: color-mix(in srgb, white 50%, transparent);
+  }
+
+  &--compacto {
+    padding: 24px 16px;
+    border-radius: 14px;
+  }
+}

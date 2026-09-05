@@ -1,0 +1,244 @@
+.painel-aba {
+  padding-top: 20px;
+}
+
+.barra-avisos {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+
+  .ativo {
+    --mat-button-text-label-text-color: var(--alm-verde);
+    background: color-mix(in srgb, var(--alm-verde) 10%, transparent);
+  }
+}
+
+.avisos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-radius: var(--alm-raio);
+  background: var(--mat-sys-surface);
+  border: 1px solid var(--mat-sys-outline-variant);
+  overflow: hidden;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 15px 18px;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    cursor: pointer;
+    transition: background 0.16s ease;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: var(--mat-sys-surface-container-low);
+    }
+
+    &.nao-lida {
+      background: color-mix(in srgb, var(--alm-teal) 6%, transparent);
+    }
+  }
+
+  &__icone {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--alm-teal) 14%, transparent);
+    color: var(--alm-teal);
+
+    mat-icon {
+      font-size: 19px;
+      width: 19px;
+      height: 19px;
+    }
+  }
+
+  &__texto {
+    flex: 1;
+    min-width: 0;
+
+    strong {
+      display: block;
+      font-size: 0.9375rem;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 3px 0 0;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: var(--mat-sys-on-surface-variant);
+    }
+
+    small {
+      display: block;
+      margin-top: 5px;
+      font-size: 0.75rem;
+      color: var(--mat-sys-outline);
+    }
+  }
+
+  &__ponto {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    margin-top: 6px;
+    border-radius: 50%;
+    background: var(--alm-teal);
+  }
+}
+
+.campanhas {
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) 1fr;
+  gap: 20px;
+  align-items: start;
+
+  @media (max-width: 1023px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.formulario {
+  display: grid;
+  gap: 4px;
+  padding: 22px;
+
+  h2 {
+    font-size: 1rem;
+    color: var(--alm-verde-escuro);
+    margin-bottom: 14px;
+  }
+
+  h3 {
+    margin: 14px 0 10px;
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  mat-checkbox {
+    margin: 8px 0;
+  }
+
+  &__acoes {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 12px;
+  }
+}
+
+.previa {
+  padding: 14px 16px;
+  margin-top: 8px;
+  border-radius: var(--alm-raio-sm);
+  background: var(--mat-sys-surface-container-low);
+
+  p {
+    margin: 10px 0 0;
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant);
+
+    strong {
+      font-family: Outfit, sans-serif;
+      font-size: 1.125rem;
+      color: var(--alm-verde);
+    }
+
+    span {
+      display: block;
+      margin-top: 3px;
+      font-size: 0.75rem;
+    }
+  }
+}
+
+.lista-campanhas {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+
+  > h2 {
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.campanha {
+  padding: 20px;
+
+  > header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    h3 {
+      font-size: 1rem;
+      color: var(--alm-verde-escuro);
+    }
+
+    small {
+      display: block;
+      margin-top: 2px;
+      font-size: 0.75rem;
+      color: var(--mat-sys-outline);
+    }
+  }
+
+  &__mensagem {
+    margin: 0 0 14px;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--mat-sys-on-surface-variant);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__metricas {
+    display: flex;
+    gap: 20px;
+    padding-top: 12px;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+    font-size: 0.75rem;
+    color: var(--mat-sys-on-surface-variant);
+
+    strong {
+      font-family: Outfit, sans-serif;
+      font-size: 1rem;
+      color: var(--alm-verde-escuro);
+    }
+  }
+
+  &__acoes {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  &__enviada {
+    display: block;
+    margin-top: 12px;
+    font-size: 0.75rem;
+    color: var(--alm-sucesso);
+  }
+}

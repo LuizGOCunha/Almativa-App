@@ -1,0 +1,105 @@
+<header class="alm-titulo-pagina">
+  <div>
+    <h1>{{ saudacao() }}, {{ primeiroNome() }}</h1>
+    <p>Aqui está o resumo da sua semana.</p>
+  </div>
+  <a matButton="filled" routerLink="/aluno/agenda">
+    <mat-icon>event_available</mat-icon> Fazer check-in
+  </a>
+</header>
+
+<section class="cartoes">
+  <!-- Próxima aula -->
+  <article class="alm-cartao cartao cartao--destaque">
+    <h2><mat-icon>event</mat-icon> Sua próxima aula</h2>
+
+    @if (proximaAula(); as c) {
+      <p class="cartao__principal">{{ c.inicioEm | date: "EEEE, dd/MM 'às' HH:mm" }}</p>
+      <p class="cartao__apoio">
+        @if (c.status === 'CONFIRMADO') {
+          <span class="ok"><mat-icon>check_circle</mat-icon> Vaga garantida</span>
+        } @else {
+          <span class="alerta">
+            <mat-icon>hourglass_top</mat-icon>
+            {{ c.posicaoFila }}º da lista de espera
+          </span>
+        }
+      </p>
+      <a matButton routerLink="/aluno/agenda">Ver agenda completa</a>
+    } @else {
+      <p class="cartao__vazio">
+        Você ainda não reservou vaga em nenhuma aula. Garanta a sua pela agenda.
+      </p>
+      <a matButton="filled" routerLink="/aluno/agenda">Escolher uma aula</a>
+    }
+  </article>
+
+  <!-- Mensalidade -->
+  <article class="alm-cartao cartao" [class.cartao--alerta]="emAberto().length > 0">
+    <h2><mat-icon>payments</mat-icon> Mensalidade</h2>
+
+    @if (proximoVencimento(); as m) {
+      <p class="cartao__principal">{{ m.valorCentavos | moeda }}</p>
+      <p class="cartao__apoio">
+        {{ m.competencia | competencia }} ·
+        @if (m.status === 'VENCIDA') {
+          <span class="erro">venceu {{ m.vencimentoEm | quando }}</span>
+        } @else {
+          <span>vence {{ m.vencimentoEm | quando }}</span>
+        }
+      </p>
+      <a matButton routerLink="/aluno/mensalidades">Ver detalhes</a>
+    } @else {
+      <p class="cartao__principal ok">Tudo em dia</p>
+      <p class="cartao__apoio">Nenhuma mensalidade em aberto. Obrigado!</p>
+      <a matButton routerLink="/aluno/mensalidades">Ver histórico</a>
+    }
+  </article>
+
+  <!-- Frequência -->
+  <article class="alm-cartao cartao">
+    <h2><mat-icon>insights</mat-icon> Últimos 30 dias</h2>
+
+    @if (resumoFrequencia().total > 0) {
+      <p class="cartao__principal">{{ resumoFrequencia().presencas }} aulas</p>
+      <div class="progresso">
+        <div class="progresso__trilho">
+          <span [style.width.%]="resumoFrequencia().aproveitamento"></span>
+        </div>
+        <span class="progresso__valor">{{ resumoFrequencia().aproveitamento }}%</span>
+      </div>
+      <p class="cartao__apoio">
+        de aproveitamento em {{ resumoFrequencia().total }} aula(s) marcada(s)
+      </p>
+      <a matButton routerLink="/aluno/frequencia">Ver histórico</a>
+    } @else {
+      <p class="cartao__vazio">Ainda não há presenças registradas neste período.</p>
+      <a matButton routerLink="/aluno/frequencia">Ver histórico</a>
+    }
+  </article>
+</section>
+
+<section class="avisos-secao">
+  <div class="avisos-secao__topo">
+    <h2>Avisos não lidos</h2>
+    <a matButton routerLink="/aluno/notificacoes">Ver todos</a>
+  </div>
+
+  @if (avisos().itens.length === 0) {
+    <app-estado-vazio
+      icone="notifications_none"
+      titulo="Nenhum aviso novo"
+      descricao="Você está em dia com tudo por aqui."
+    />
+  } @else {
+    <ul class="avisos">
+      @for (a of avisos().itens; track a.id) {
+        <li>
+          <strong>{{ a.titulo }}</strong>
+          <p>{{ a.mensagem }}</p>
+          <small>{{ a.criadoEm | quando }}</small>
+        </li>
+      }
+    </ul>
+  }
+</section>

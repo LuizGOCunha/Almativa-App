@@ -1,0 +1,80 @@
+<section class="cronometro" [class.cronometro--compacto]="compacto()" [attr.data-tipo]="tipoAtual()">
+  <header class="cronometro__topo">
+    <div>
+      <h2>{{ preset().nome }}</h2>
+      <span class="cronometro__round">
+        Round {{ roundAtual() }} de {{ preset().rounds }}
+      </span>
+    </div>
+    @if (concluido()) {
+      <span class="cronometro__fim">concluído</span>
+    }
+  </header>
+
+  <p class="cronometro__rotulo">{{ concluido() ? 'Fim do treino' : rotuloAtual() }}</p>
+
+  <p class="cronometro__mostrador" [class.alerta]="emContagemFinal()" aria-live="off">
+    {{ mostrador() }}
+  </p>
+
+  <div
+    class="cronometro__trilho"
+    role="progressbar"
+    [attr.aria-valuenow]="progresso()"
+    aria-valuemin="0"
+    aria-valuemax="100"
+  >
+    <span [style.width.%]="progresso()"></span>
+  </div>
+
+  @if (proximaEtapa(); as prox) {
+    <p class="cronometro__proximo">
+      a seguir: {{ prox.intervalo.rotulo }}
+      <small>{{ prox.intervalo.duracaoSegundos }}s</small>
+    </p>
+  }
+
+  <div class="cronometro__controles">
+    <button
+      matIconButton
+      (click)="pular(-1)"
+      [disabled]="indiceEtapa() === 0"
+      aria-label="Intervalo anterior"
+    >
+      <mat-icon>skip_previous</mat-icon>
+    </button>
+
+    <button
+      matFab
+      class="cronometro__play"
+      (click)="alternar()"
+      [attr.aria-label]="rodando() ? 'Pausar' : 'Iniciar'"
+    >
+      <mat-icon>{{ rodando() ? 'pause' : 'play_arrow' }}</mat-icon>
+    </button>
+
+    <button
+      matIconButton
+      (click)="pular(1)"
+      [disabled]="indiceEtapa() >= totalEtapas() - 1"
+      aria-label="Próximo intervalo"
+    >
+      <mat-icon>skip_next</mat-icon>
+    </button>
+
+    <button matIconButton (click)="reiniciar()" aria-label="Reiniciar">
+      <mat-icon>replay</mat-icon>
+    </button>
+  </div>
+
+  <div class="cronometro__etapas" aria-hidden="true">
+    @for (etapa of etapas(); track $index) {
+      <span
+        class="cronometro__ponto"
+        [class.feito]="$index < indiceEtapa()"
+        [class.atual]="$index === indiceEtapa()"
+        [attr.data-tipo]="etapa.intervalo.tipo"
+      ></span>
+    }
+  </div>
+</section>
