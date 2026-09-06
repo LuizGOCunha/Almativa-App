@@ -50,6 +50,24 @@ export class AuthService {
     }
   }
 
+  async registrar(
+    email: string,
+    nome: string,
+    senha: string,
+    role: Role,
+  ): Promise<UsuarioDto> {
+    this._carregando.set(true);
+    try {
+      const sessao = await firstValueFrom(
+        this.http.post<SessaoDto>(`${this.base}/registrar`, { email, nome, senha, role }),
+      );
+      this.guardarSessao(sessao);
+      return sessao.usuario;
+    } finally {
+      this._carregando.set(false);
+    }
+  }
+
   /** Pareia a tela da sala usando o token gerado pelo admin. */
   async entrarComoTv(token: string): Promise<UsuarioDto> {
     const sessao = await firstValueFrom(

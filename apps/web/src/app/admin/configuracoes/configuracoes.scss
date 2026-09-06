@@ -11,8 +11,9 @@
 }
 
 .painel {
-  display: grid;
+  display: flex;
   gap: 2px;
+  flex-flow: column;
   padding: 22px;
   position: sticky;
   top: 78px;

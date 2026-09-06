@@ -78,6 +78,34 @@ export async function login(email: string, senha: string, meta: MetaSessao): Pro
   return emitirSessao(usuario, meta);
 }
 
+export async function registrar(
+  email: string,
+  nome: string,
+  senha: string,
+  role: Role,
+  meta: MetaSessao,
+): Promise<SessaoDto> {
+  const emailNormalizado = email.toLowerCase().trim();
+
+  const usuarioExistente = await prisma.usuario.findUnique({
+    where: { email: emailNormalizado },
+  });
+  if (usuarioExistente) throw conflito('Um usuário com este e-mail já existe.');
+
+  const usuario = await prisma.usuario.create({
+    data: {
+      email: emailNormalizado,
+      nome,
+      senhaHash: await gerarHashSenha(senha),
+      role,
+      ativo: true,
+      precisaTrocarSenha: false,
+    },
+  });
+
+  return emitirSessao(usuario, meta);
+}
+
 export async function renovar(refreshToken: string, meta: MetaSessao): Promise<SessaoDto> {
   const payload = verificarRefresh(refreshToken);
   const hash = hashToken(refreshToken);

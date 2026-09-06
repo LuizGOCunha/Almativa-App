@@ -46,6 +46,12 @@ export const routes: Routes = [
     loadComponent: () => import('./auth/entrar/entrar').then((m) => m.Entrar),
   },
   {
+    path: 'registrar',
+    title: 'Registrar — Almativa',
+    canActivate: [guardaAutenticado, guardaPerfil(Role.ADMIN)],
+    loadComponent: () => import('./auth/registrar/registrar').then((m) => m.Registrar),
+  },
+  {
     path: 'tv/parear',
     title: 'Parear tela da sala — Almativa',
     loadComponent: () => import('./auth/parear-tv/parear-tv').then((m) => m.PareaTv),
