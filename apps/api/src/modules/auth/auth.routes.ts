@@ -9,6 +9,7 @@ import {
   loginSchema,
   parearDispositivoSchema,
   refreshSchema,
+  registrarSchema,
   trocarSenhaSchema,
 } from './auth.schemas.js';
 
@@ -21,6 +22,21 @@ const limitadorLogin = rateLimit({
 });
 
 export const authRouter = Router();
+
+authRouter.post(
+  '/registrar',
+  autenticar,
+  somenteAdmin,
+  validar(registrarSchema),
+  rota(async (req, res) => {
+    const { email, nome, senha, role } = req.body;
+    const sessao = await servico.registrar(email, nome, senha, role, {
+      userAgent: req.headers['user-agent'],
+      ip: req.ip,
+    });
+    res.status(201).json(sessao);
+  }),
+);
 
 authRouter.post(
   '/login',
